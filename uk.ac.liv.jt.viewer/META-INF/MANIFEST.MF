@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JT Viewer
+Bundle-SymbolicName: uk.ac.liv.jt.viewer
+Bundle-Version: 0.7.3.qualifier
+Bundle-Vendor: University of Liverpool
+Automatic-Module-Name: uk.ac.liv.jt.viewer
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Export-Package: de.jreality.geometry,
+ de.jreality.math,
+ de.jreality.plugin,
+ de.jreality.reader,
+ de.jreality.scene,
+ de.jreality.scene.proxy.scene,
+ de.jreality.shader,
+ de.jreality.util,
+ uk.ac.liv.jt.viewer,
+ uk.ac.liv.jt.viewer.debug
+Require-Bundle: uk.ac.liv.jt;bundle-version="0.7.3"

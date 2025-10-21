@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JT Parser
+Bundle-SymbolicName: uk.ac.liv.jt
+Bundle-Version: 0.7.3.qualifier
+Export-Package: uk.ac.liv.jt.codec,
+ uk.ac.liv.jt.debug,
+ uk.ac.liv.jt.format,
+ uk.ac.liv.jt.format.elements,
+ uk.ac.liv.jt.segments,
+ uk.ac.liv.jt.types
+Bundle-Vendor: University of Liverpool
+Automatic-Module-Name: uk.ac.liv.jt
+Bundle-RequiredExecutionEnvironment: JavaSE-21

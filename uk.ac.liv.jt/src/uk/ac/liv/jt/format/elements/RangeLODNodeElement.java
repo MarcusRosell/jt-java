@@ -41,9 +41,7 @@ public class RangeLODNodeElement extends LODNodeElement {
 
         super.read();
 
-        rangeLimits = reader.readVecF32();
-        center = reader.readCoordF32();
-
+		this.rangeLimits = this.reader.readVecF32();
+		this.center = this.reader.readCoordF32();
     }
-
 }

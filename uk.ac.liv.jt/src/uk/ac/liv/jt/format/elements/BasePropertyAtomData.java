@@ -39,18 +39,17 @@ import java.io.IOException;
  * @author fabio
  *
  */
-public class BasePropertyAtomData extends JTNode {
+public class BasePropertyAtomData extends JTNode
+{
+	long stateFlags;
 
-    long stateFlags;
-    
-    public Object ovalue;
+	public Object ovalue;
 
-    @Override
-    public void read() throws IOException {
-        super.read();
-        // System.out.println("obj ID: " + objectID);
-        stateFlags = getReader().readU32();
-
-    }
-
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
+		// System.out.println("obj ID: " + objectID);
+		this.stateFlags = getReader().readU32();
+	}
 }

@@ -34,61 +34,61 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import uk.ac.liv.jt.format.JTElement;
+import uk.ac.liv.jt.internal.BundleAccessor;
 
-public class PropertyProxyMetaDataElement extends JTElement {
+public class PropertyProxyMetaDataElement extends JTElement
+{
+	public Map<String, BasePropertyAtomData> properties;
 
-    public Map<String, BasePropertyAtomData> properties;
+	@Override
+	public void read() throws IOException
+	{
+		String key;
+		this.properties = new HashMap<>();
 
-    @Override
-    public void read() throws IOException {
-        String key;
-        properties = new HashMap<String, BasePropertyAtomData>();
-        while ((key = reader.readMbString()) != null) {
-            int type = reader.readU8();
-            BasePropertyAtomData d;
-            switch (type) {
-            case 0:
-                d = null;
-                break;
-            case 1:
-                d = new StringPropertyAtomElement();
-                ((StringPropertyAtomElement) d).value = reader.readMbString();
-                break;
-            case 2:
-                d = new IntegerPropertyAtomElement();
-                ((IntegerPropertyAtomElement) d).value = reader.readI32();
-                break;
-            case 3:
-                d = new FloatingPointPropertyAtomElement();
-                ((FloatingPointPropertyAtomElement) d).value = reader.readF32();
-                break;
-            case 4:
-                d = new DatePropertyAtomElement();
-                short y = reader.readI16();
-                short month = reader.readI16();
-                short da = reader.readI16();
-                short h = reader.readI16();
-                short minute = reader.readI16();
-                short s = reader.readI16();
+		while ( (key = this.reader.readMbString()) != null ) {
+			int type = this.reader.readU8();
+			BasePropertyAtomData d;
+			switch ( type ) {
+				case 0:
+					d = null;
+					break;
+				case 1:
+					d = new StringPropertyAtomElement();
+					((StringPropertyAtomElement)d).value = this.reader.readMbString();
+					break;
+				case 2:
+					d = new IntegerPropertyAtomElement();
+					((IntegerPropertyAtomElement)d).value = this.reader.readI32();
+					break;
+				case 3:
+					d = new FloatingPointPropertyAtomElement();
+					((FloatingPointPropertyAtomElement)d).value = this.reader.readF32();
+					break;
+				case 4:
+					d = new DatePropertyAtomElement();
+					short y = this.reader.readI16();
+					short month = this.reader.readI16();
+					short da = this.reader.readI16();
+					short h = this.reader.readI16();
+					short minute = this.reader.readI16();
+					short s = this.reader.readI16();
 
-                // Specification does not mention time zone or else; so we
-                // assume GMT
-                // lacking better information
-                Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-                c.set(y, month, da, h, minute, s);
-                ((DatePropertyAtomElement) d).date = c.getTime();
-                break;
-            default:
-                d = null;
-                System.out
-                        .println("Error : invalid data type in PropertyProxyMetaDataElement");
-                break;
-            }
-            properties.put(key, d);
-            //System.out.println(key + " = " + d);
+					// Specification does not mention time zone or else; so we
+					// assume GMT
+					// lacking better information
+					Calendar c = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
+					c.set( y, month, da, h, minute, s );
+					((DatePropertyAtomElement)d).date = c.getTime();
+					break;
+				default:
+					d = null;
+					BundleAccessor.getLogger().error( "invalid data type in PropertyProxyMetaDataElement" ); //$NON-NLS-1$
+					break;
+			}
+			this.properties.put( key, d );
+			//System.out.println(key + " = " + d);
 
-        }
-
-    }
-
+		}
+	}
 }

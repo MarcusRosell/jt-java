@@ -37,9 +37,7 @@ public class SwitchNodeElement extends GroupNodeElement {
     @Override
     public void read() throws IOException {
         super.read();
-        versionNumber = reader.readI16();
-        selectedChild = reader.readI32();
-
+		this.versionNumber = this.reader.readI16();
+		this.selectedChild = this.reader.readI32();
     }
-
 }

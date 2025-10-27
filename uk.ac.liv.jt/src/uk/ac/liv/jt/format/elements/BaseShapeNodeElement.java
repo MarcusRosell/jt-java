@@ -48,15 +48,13 @@ public class BaseShapeNodeElement extends BaseNodeElement {
     public void read() throws IOException {
         super.read();
 
-        transformedBBox = reader.readBBoxF32();
-        untransformedBBox = reader.readBBoxF32();
-        area = reader.readF32();
-        vertexRange = reader.readRange();
-        nodeRange = reader.readRange();
-        ploygonRange = reader.readRange();
-        size = reader.readI32();
-        compressionLevel = reader.readF32();
-
+		this.transformedBBox = this.reader.readBBoxF32();
+		this.untransformedBBox = this.reader.readBBoxF32();
+		this.area = this.reader.readF32();
+		this.vertexRange = this.reader.readRange();
+		this.nodeRange = this.reader.readRange();
+		this.ploygonRange = this.reader.readRange();
+		this.size = this.reader.readI32();
+		this.compressionLevel = this.reader.readF32();
     }
-
 }

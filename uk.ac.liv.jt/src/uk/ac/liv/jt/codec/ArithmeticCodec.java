@@ -31,8 +31,9 @@ import java.nio.ByteBuffer;
 
 import uk.ac.liv.jt.format.BitBuffer;
 
-public class ArithmeticCodec {
-	
+public class ArithmeticCodec
+{
+
 	/* Arithmetic encoding is a lossless compression algorithm that replaces an 
 	 * input stream of symbols or bytes with a single fixed point output number 
 	 * (i.e. only the mantissa bits to the right of the binary point are output 
@@ -44,159 +45,163 @@ public class ArithmeticCodec {
 	 * symbols that were used to create it.
 	 */
 
+	int code; // Present input code value, for decoding only
+	int low; // Start of the current code range
+	int high; // End of the current code range
 
-    int code; // Present input code value, for decoding only
-    int low; // Start of the current code range
-    int high; // End of the current code range
+	long bitBuffer; // Temporary i/o buffer
+	int nBits; // Number of bits in _bitBuffer
 
-    long bitBuffer; // Temporary i/o buffer
-    int nBits; // Number of bits in _bitBuffer
+	BitBuffer encodedBits; // The bitbuffer
 
-    BitBuffer encodedBits; // The bitbuffer
+	public ArithmeticCodec()
+	{
+		super();
+		this.code = 0x0000;
+		this.low = 0x0000;
+		this.high = 0xffff;
 
-    public ArithmeticCodec() {
-        super();
-        code = 0x0000;
-        low = 0x0000;
-        high = 0xffff;
+		this.bitBuffer = 0x00000000;
+		this.nBits = 0;
+	}
 
-        bitBuffer = 0x00000000;
-        nBits = 0;
-    }
+	public int[] decode( byte[] encodedBytes, int codeTextLength,
+			Int32ProbCtxts probCtxt, int numSymbolsToRead, int valueElelemtCount )
+	{
+		//ArrayList<Integer> tmpList = new ArrayList<Integer>();
+		int[] result = new int[valueElelemtCount];
+		int position = 0;
+		ArithmeticProbabilityRange newSymbolRange;
+		int currContext = 0;
+		int dummyTotalBits;
+		int symbolsCurrCtx;
 
-    public int[] decode(byte[] encodedBytes, int codeTextLength,
-            Int32ProbCtxts probCtxt, int numSymbolsToRead, int valueElelemtCount) {
-        //ArrayList<Integer> tmpList = new ArrayList<Integer>();
-        int[] result = new int[valueElelemtCount];
-        int position = 0;
-        ArithmeticProbabilityRange newSymbolRange;
-        int currContext = 0;
-        int dummyTotalBits;
-        int symbolsCurrCtx;
+		int cptOutOfBand = 0;
+		int[] outofBandValues = probCtxt.getOutOfBandValues();
 
-        int cptOutOfBand = 0;
-        int[] outofBandValues = probCtxt.getOutOfBandValues();
+		Int32ProbCtxtTable pCurrContext;
 
-        Int32ProbCtxtTable pCurrContext;
+		int nBitsRead = -1;
 
-        int nBitsRead = -1;
+		this.encodedBits = new BitBuffer( ByteBuffer.wrap( encodedBytes ) );
 
-        encodedBits = new BitBuffer(ByteBuffer.wrap(encodedBytes));
+		this.bitBuffer = this.encodedBits.readAsInt( 32 ) & 0xFFFFFFFFL;
 
-        bitBuffer = encodedBits.readAsInt(32) & 0xFFFFFFFFL;
+		this.low = 0x0000;
+		this.high = 0xffff;
 
-        low = 0x0000;
-        high = 0xffff;
+		this.code = (int)(this.bitBuffer >> 16);
+		this.bitBuffer = (this.bitBuffer << 16) & 0xFFFFFFFFL;
 
-        code = (int) (bitBuffer >> 16);
-        bitBuffer = (bitBuffer << 16) & 0xFFFFFFFFL;
+		this.nBits = 16;
 
-        nBits = 16;
+		// Begin decoding
+		// Returns index of the first context entry and total number of bits
+		// pDriver->getDecodeData(currContext, dummyTotalBits);
 
-        // Begin decoding
-        // Returns index of the first context entry and total number of bits
-        // pDriver->getDecodeData(currContext, dummyTotalBits);
+		for ( int ii = 0; ii < numSymbolsToRead; ii++ ) {
+			// Returns the probability context for a given index
+			pCurrContext = probCtxt.getContext( currContext );
 
-        for (int ii = 0; ii < numSymbolsToRead; ii++) {
-            // Returns the probability context for a given index
-            pCurrContext = probCtxt.getContext(currContext);
+			symbolsCurrCtx = pCurrContext.getTotalCount();
 
-            symbolsCurrCtx = pCurrContext.getTotalCount();
+			long rescaledCode = ((((long)(this.code - this.low) + 1) * symbolsCurrCtx - 1) / ((long)(this.high - this.low) + 1));
 
-            long rescaledCode = ((((long) (code - low) + 1) * symbolsCurrCtx - 1) / ((long) (high - low) + 1));
+			Int32ProbCtxtEntry currEntry = pCurrContext.lookupEntryByCumCount( rescaledCode );
 
-            Int32ProbCtxtEntry currEntry = pCurrContext
-                    .lookupEntryByCumCount(rescaledCode);
+			newSymbolRange = new ArithmeticProbabilityRange( currEntry.getCumCount(), currEntry.getCumCount()
+					+ currEntry.getOccCount(), symbolsCurrCtx );
 
-            newSymbolRange = new ArithmeticProbabilityRange(
-                    currEntry.getCumCount(), currEntry.getCumCount()
-                            + currEntry.getOccCount(), symbolsCurrCtx);
+			removeSymbolFromStream( newSymbolRange );
 
-            removeSymbolFromStream(newSymbolRange);
+			int symbol = (int)currEntry.getSymbol();
+			int outValue;
 
-            int symbol = (int) currEntry.getSymbol();
-            int outValue;
+			if ( (symbol == -2) && (currContext == 0) ) {
+				outValue = outofBandValues[cptOutOfBand];
+				cptOutOfBand++;
+			}
+			else {
+				outValue = (int)currEntry.getAssociatedValue();
+			}
 
-            if ((symbol == -2) && (currContext == 0)) {
-                outValue = outofBandValues[cptOutOfBand];
-                cptOutOfBand++;
-            } else
-                outValue = (int) currEntry.getAssociatedValue();
+			if ( (symbol != -2) || (currContext == 0) ) {
+				result[position++] = outValue;
+			}
+			//tmpList.add(outValue);
 
-            if ((symbol != -2) || (currContext == 0))
-                result[position++] = outValue;
-                //tmpList.add(outValue);
-            
-          /*  if ( currContext == 0 ) {
-            	if ( symbol == -2 ) {
-                    outValue = outofBandValues[cptOutOfBand];
-                    cptOutOfBand++;
-                } else {
-                    outValue = (int) currEntry.getAssociatedValue();
-                }
-            	tmpList.add(outValue);
-            	
-            } else {
-            	if ( symbol != -2 )
-                	tmpList.add((int) currEntry.getAssociatedValue()) ;
-            }*/
-            
+			/*  if ( currContext == 0 ) {
+				if ( symbol == -2 ) {
+			        outValue = outofBandValues[cptOutOfBand];
+			        cptOutOfBand++;
+			    } else {
+			        outValue = (int) currEntry.getAssociatedValue();
+			    }
+				tmpList.add(outValue);
+				
+			} else {
+				if ( symbol != -2 )
+			    	tmpList.add((int) currEntry.getAssociatedValue()) ;
+			}*/
 
-            currContext = currEntry.getNextContext();
-        }
+			currContext = currEntry.getNextContext();
+		}
 
 //        int[] res = new int[tmpList.size()];
 //        for (int i = 0; i < tmpList.size(); i++)
 //            res[i] = tmpList.get(i);
-        return result;
-    }
+		return result;
+	}
 
-    private void removeSymbolFromStream(ArithmeticProbabilityRange sym) {
+	private void removeSymbolFromStream( ArithmeticProbabilityRange sym )
+	{
 
-        // First, the range is expanded to account for the symbol removal.
-        int range = high - low + 1;
-        high = low + (int) ((range * sym.getHigh()) / sym.getScale() - 1);
-        low = low + (int) ((range * sym.getLow()) / sym.getScale());
+		// First, the range is expanded to account for the symbol removal.
+		int range = this.high - this.low + 1;
+		this.high = this.low + (int)((range * sym.getHigh()) / sym.getScale() - 1);
+		this.low = this.low + (int)((range * sym.getLow()) / sym.getScale());
 
-        // Next, any possible bits are shipped out.
-        for (;;) {
-            // If the MSB match, the bits will be shifted out.
-            if (((~(high ^ low)) & 0x8000) != 0) // Should be equal to 0x8000
-            {
-            }
-            // 2nd MSB of high is 0 and 2nd MSB of low is 1
-            else if ((low & 0x4000) == 0x4000 && (high & 0x4000) == 0) {
-                // Underflow is threatening, shift out 2nd most signif digit.
-                code ^= 0x4000;
-                low &= 0x3fff;
-                high |= 0x4000;
-            } else
-                // Nothing can be shifted out, so return.
-                return;
+		// Next, any possible bits are shipped out.
+		for ( ;; ) {
+			// If the MSB match, the bits will be shifted out.
+			if ( ((~(this.high ^ this.low)) & 0x8000) != 0 ) // Should be equal to 0x8000
+			{}
+			// 2nd MSB of high is 0 and 2nd MSB of low is 1
+			else if ( (this.low & 0x4000) == 0x4000 && (this.high & 0x4000) == 0 ) {
+				// Underflow is threatening, shift out 2nd most signif digit.
+				this.code ^= 0x4000;
+				this.low &= 0x3fff;
+				this.high |= 0x4000;
+			}
+			else {
+				// Nothing can be shifted out, so return.
+				return;
+			}
 
-            low <<= 1;
-            low &= 0xFFFF; // int are on 32 bits, we want to get rid of the 1st
-                           // 2 bytes when we shift
-            high <<= 1;
-            high &= 0xFFFF; // int are on 32 bits, we want to get rid of the 1st
-                            // 2 bytes when we shift
-            high |= 1;
-            code <<= 1;
-            code &= 0xFFFF; // int are on 32 bits, we want to get rid of the 1st
-                            // 2 bytes when we shift
+			this.low <<= 1;
+			this.low &= 0xFFFF; // int are on 32 bits, we want to get rid of the 1st
+			// 2 bytes when we shift
+			this.high <<= 1;
+			this.high &= 0xFFFF; // int are on 32 bits, we want to get rid of the 1st
+			// 2 bytes when we shift
+			this.high |= 1;
+			this.code <<= 1;
+			this.code &= 0xFFFF; // int are on 32 bits, we want to get rid of the 1st
+			// 2 bytes when we shift
 
-            if (nBits == 0) {
-                bitBuffer = encodedBits.readAsInt(32) & 0xFFFFFFFFL;
+			if ( this.nBits == 0 ) {
+				this.bitBuffer = this.encodedBits.readAsInt( 32 ) & 0xFFFFFFFFL;
+				this.nBits = 32;
+			}
 
-                nBits = 32;
-            }
-            // Add the msb of bitbuffer as the lsb of code
-            code |= (int) (bitBuffer >> 31);
-            // Get rid of the msb of bitbuffer;
-            bitBuffer <<= 1;
-            bitBuffer &= 0xFFFFFFFFL; // long are on 64 bits, we want UInt32
-            nBits--;
-        }
-    }
+			// Add the msb of bitbuffer as the lsb of code
+			this.code |= (int)(this.bitBuffer >> 31);
+
+			// Get rid of the msb of bitbuffer;
+			this.bitBuffer <<= 1;
+			this.bitBuffer &= 0xFFFFFFFFL; // long are on 64 bits, we want UInt32
+			this.nBits--;
+		}
+	}
 
 }

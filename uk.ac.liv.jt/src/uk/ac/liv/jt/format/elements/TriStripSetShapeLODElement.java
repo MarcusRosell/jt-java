@@ -36,205 +36,203 @@ import uk.ac.liv.jt.format.JTQuantizationParam;
 import uk.ac.liv.jt.format.LossyQuantizedRawVertexData;
 import uk.ac.liv.jt.format.QuantizedVertexCoordArray;
 import uk.ac.liv.jt.format.QuantizedVertexNormalArray;
+import uk.ac.liv.jt.internal.BundleAccessor;
 import uk.ac.liv.jt.types.Vec3D;
 
 /** A Tri-Strip Set Shape LOD Element contains the geometric shape 
   definition data (e.g. vertices, polygons, normals, etc.) for a single 
   LOD of a collection of independent and unconnected triangle strips. 
-  p.120 */ 
-public class TriStripSetShapeLODElement extends ShapeLODElement {
+  p.120 */
+public class TriStripSetShapeLODElement extends ShapeLODElement
+{
 
+	public int[] vertexDataIndices;
+	/** Primitive List Indices is a vector of indices into the 
+	 uncompressed Raw Vertex Data marking the start/beginning of 
+	 primitives. */
+	public int[] primitiveListIndices;
+	public QuantizedVertexCoordArray quantVertexCoord;
+	public QuantizedVertexNormalArray quantVertexNorm;
 
-    public int[] vertexDataIndices;
-    /** Primitive List Indices is a vector of indices into the 
-     uncompressed Raw Vertex Data marking the start/beginning of 
-     primitives. */
-    public int[] primitiveListIndices;
-    public QuantizedVertexCoordArray quantVertexCoord;
-    public QuantizedVertexNormalArray quantVertexNorm;
+	public double[] vertex;
+	public double[] normal;
 
-    public double[] vertex;
-    public double[] normal;
-
-
-
-    /* Normals for the vertices */
-    public Vec3D[] normals;
-    private JTQuantizationParam quantParam;
-    public boolean uncompressed;
+	/* Normals for the vertices */
+	public Vec3D[] normals;
+	private JTQuantizationParam quantParam;
+	public boolean uncompressed;
 
 //    public static boolean testDisplay = false;
-    public static boolean testDisplayNormals = false;
+	public static boolean testDisplayNormals = false;
 
-    @Override
-    public void read() throws IOException {
-        readVertexShapeLODData();
+	@Override
+	public void read() throws IOException
+	{
+		readVertexShapeLODData();
 
-        /* Version Number is the version identifier for this Tri-Strip Set 
-         * Shape LOD. Version number â€œ0x0001â€� is currently the only valid 
-         * value. p.120 */
-        int versionNumber = getReader().readI16();
+		/* Version Number is the version identifier for this Tri-Strip Set 
+		 * Shape LOD. Version number â€œ0x0001â€� is currently the only valid 
+		 * value. p.120 */
+		int versionNumber = getReader().readI16();
 
-        readVertexBasedShapeCompressedRepData();
-    }
-    /** Vertex Shape LOD Data collection contains the bindings and 
-     * quantization settings for all shape LODs defined by a collection of 
-     * vertices. p.118
-     */
-    public void readVertexShapeLODData() throws IOException {
+		readVertexBasedShapeCompressedRepData();
+	}
 
+	/** Vertex Shape LOD Data collection contains the bindings and 
+	 * quantization settings for all shape LODs defined by a collection of 
+	 * vertices. p.118
+	 */
+	public void readVertexShapeLODData() throws IOException
+	{
 
-        /* Version Number is the version identifier for this Vertex Shape LOD 
-         * Data. Version number â€œ0x0001â€� is currently the only valid value.
-         * p.119
-         */
-        int versionNumber = getReader().readI16();
+		/* Version Number is the version identifier for this Vertex Shape LOD 
+		 * Data. Version number â€œ0x0001â€� is currently the only valid value.
+		 * p.119
+		 */
+		int versionNumber = getReader().readI16();
 
-        /* Binding Attributes is a collection of normal, texture coordinate, 
-         * and color binding information encoded within a single I32 using the 
-         * following bit allocation. p.119
-         */
-        int bindingAttributes = getReader().readI32();
+		/* Binding Attributes is a collection of normal, texture coordinate, 
+		 * and color binding information encoded within a single I32 using the 
+		 * following bit allocation. p.119
+		 */
+		int bindingAttributes = getReader().readI32();
 
-        quantParam = new JTQuantizationParam(getReader());
-        quantParam.read();
+		this.quantParam = new JTQuantizationParam( getReader() );
+		this.quantParam.read();
 
-        if (DebugInfo.debugMode) {
-            System.out.println();
-            System.out.println("*** Vertex Shape LOD Data ***");
-            System.out.println("Version Number: " + versionNumber);
-            System.out
-            .println("Binding Attributes: " + bindingAttributes);
-        }
-    }
+		if ( DebugInfo.debugMode ) {
+			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "*** Vertex Shape LOD Data ***" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Version Number: {}", versionNumber ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Binding Attributes: {}", bindingAttributes ); //$NON-NLS-1$
+		}
+	}
 
-    public void readVertexBasedShapeCompressedRepData() throws IOException {
-        /* The Vertex Based Shape Compressed Rep Data collection is the 
-         * compressed and/or encoded representation of the vertex coordinates, 
-         * normal, texture coordinate, and color data for a vertex based 
-         * shape. p.234 */
+	public void readVertexBasedShapeCompressedRepData() throws IOException
+	{
+		/* The Vertex Based Shape Compressed Rep Data collection is the 
+		 * compressed and/or encoded representation of the vertex coordinates, 
+		 * normal, texture coordinate, and color data for a vertex based 
+		 * shape. p.234 */
 
-        /* Version Number is the version identifier for this Vertex Based 
-         * Shape Rep Data. Version number â€œ0x0001â€� is currently the only valid 
-         * value. */
-        int versionNumber = getReader().readI16();
+		/* Version Number is the version identifier for this Vertex Based 
+		 * Shape Rep Data. Version number â€œ0x0001â€� is currently the only valid 
+		 * value. */
+		int versionNumber = getReader().readI16();
 
-        /* Normal Binding specifies how (at what granularity) normal vector 
-         * data is supplied (â€œboundâ€�) for the Shape Rep in either the Lossless 
-         * Compressed Raw Vertex Data */
-        int normalBinding = getReader().readU8();
+		/* Normal Binding specifies how (at what granularity) normal vector 
+		 * data is supplied (â€œboundâ€�) for the Shape Rep in either the Lossless 
+		 * Compressed Raw Vertex Data */
+		int normalBinding = getReader().readU8();
 
-        /* Texture Coord Binding specifies how (at what granularity) texture 
-         * coordinate data is supplied (â€œboundâ€�) for the Shape Rep in either 
-         * the Lossless Compressed Raw Vertex Data or Lossy Quantized Raw 
-         * Vertex Data collections. */
-        int textureCoordBinding = getReader().readU8();
+		/* Texture Coord Binding specifies how (at what granularity) texture 
+		 * coordinate data is supplied (â€œboundâ€�) for the Shape Rep in either 
+		 * the Lossless Compressed Raw Vertex Data or Lossy Quantized Raw 
+		 * Vertex Data collections. */
+		int textureCoordBinding = getReader().readU8();
 
-        /* Color Binding specifies how (at what granularity) color data is 
-         * supplied (â€œboundâ€�) for the Shape Rep in either the Lossless 
-         * Compressed Raw Vertex Data or Lossy Quantized Raw Vertex Data 
-         * collections. */
-        int colorBinding = getReader().readU8();
+		/* Color Binding specifies how (at what granularity) color data is 
+		 * supplied (â€œboundâ€�) for the Shape Rep in either the Lossless 
+		 * Compressed Raw Vertex Data or Lossy Quantized Raw Vertex Data 
+		 * collections. */
+		int colorBinding = getReader().readU8();
 
-        if (DebugInfo.debugMode) {
-            System.out.println();
-            System.out.println("*** Vertex Based Shape Compressed RepData ***");
-            System.out.println("Version Number: " + versionNumber);
-            System.out.println("Normal Binding: " + normalBinding);
-            System.out.println("Texture Coord Binding: "
-                    + textureCoordBinding);
-            System.out.println("Color Binding: " + colorBinding);
-        }
+		if ( DebugInfo.debugMode ) {
+			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "*** Vertex Based Shape Compressed RepData ***" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Version Number: {}", versionNumber ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Normal Binding: {}", normalBinding ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Texture Coord Binding: {}", textureCoordBinding ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Color Binding: {}", colorBinding ); //$NON-NLS-1$
+		}
 
-        JTQuantizationParam quantParam = new JTQuantizationParam(getReader());
-        quantParam.read();
+		JTQuantizationParam quantParam = new JTQuantizationParam( getReader() );
+		quantParam.read();
 
+		if ( DebugInfo.debugMode ) {
+			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "** Primitive List Indices **" ); //$NON-NLS-1$
+		}
 
-        if (DebugInfo.debugMode) {
-            System.out.println();
-            System.out.println("** Primitive List Indices **");
-        }
+		/* Primitive List Indices is a vector of indices into the 
+		 * uncompressed Raw Vertex Data marking the start/beginning of 
+		 * primitives. Primitive List Indices uses the Int32 version of the 
+		 * CODEC to compress and encode data. */
+		this.primitiveListIndices = Int32Compression.read_VecI32_Int32CDP( getReader(), PredictorType.Stride1 );
 
-        /* Primitive List Indices is a vector of indices into the 
-         * uncompressed Raw Vertex Data marking the start/beginning of 
-         * primitives. Primitive List Indices uses the Int32 version of the 
-         * CODEC to compress and encode data. */
-        primitiveListIndices = Int32Compression.read_VecI32_Int32CDP(
-                getReader(), PredictorType.Stride1);
+		if ( DebugInfo.debugMode ) {
+			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( " => Primitive List Indices ({})", this.primitiveListIndices.length ); //$NON-NLS-1$
 
-        if (DebugInfo.debugMode) {
-            System.out.println();
-            System.out.println(" => Primitive List Indices (" + primitiveListIndices.length + ") ");
-            for (int primitiveListIndice : primitiveListIndices)
-                System.out.print(primitiveListIndice + " ");
-            System.out.println();
-        }
+			StringBuilder indices = new StringBuilder();
+			for ( int primitiveListIndice : this.primitiveListIndices ) {
+				indices.append( primitiveListIndice ).append( " " ); //$NON-NLS-1$
+			}
+			BundleAccessor.getLogger().info( "{}", indices.toString() ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
+		}
 
-        LossyQuantizedRawVertexData rawVertexData = new LossyQuantizedRawVertexData(
-                reader);
+		LossyQuantizedRawVertexData rawVertexData = new LossyQuantizedRawVertexData( this.reader );
 
-        if (quantParam.getBitsPerVertex() == 0) {
-            readLosslessCompressedRawVertexData(normalBinding, textureCoordBinding, colorBinding);
-            uncompressed = true;
-        }
-        else {
-            rawVertexData.read(normalBinding, textureCoordBinding, colorBinding);
-            quantVertexCoord = rawVertexData.getQuantVertex();
-            vertexDataIndices = rawVertexData.getVertexDataIndices();
-            normals = rawVertexData.getQuantVertexNorm().getNormals();
-            uncompressed = false;
-        }
+		if ( quantParam.getBitsPerVertex() == 0 ) {
+			readLosslessCompressedRawVertexData( normalBinding, textureCoordBinding, colorBinding );
+			this.uncompressed = true;
+		}
+		else {
+			rawVertexData.read( normalBinding, textureCoordBinding, colorBinding );
+			this.quantVertexCoord = rawVertexData.getQuantVertex();
+			this.vertexDataIndices = rawVertexData.getVertexDataIndices();
+			this.normals = rawVertexData.getQuantVertexNorm().getNormals();
+			this.uncompressed = false;
+		}
 
 //        if (testDisplay) {
 //			Converter.display( this );
-            //displayVertices();
+		//displayVertices();
 //        }
 
-    }
+	}
 
-    private void readLosslessCompressedRawVertexData(int normalBinding, int textureCoordBinding, int colorBinding) throws IOException {
-        int uncompressedDataSize = getReader().readI32();
-        int compressedDataSize = getReader().readI32();
-        int len;
-        if (compressedDataSize > 0) {
-            getReader().setInflating(true, compressedDataSize);
-            len = uncompressedDataSize;
-        } else {
-            len = Math.abs(compressedDataSize);
+	private void readLosslessCompressedRawVertexData( int normalBinding, int textureCoordBinding, int colorBinding ) throws IOException
+	{
+		int uncompressedDataSize = getReader().readI32();
+		int compressedDataSize = getReader().readI32();
+		int len;
+		if ( compressedDataSize > 0 ) {
+			getReader().setInflating( true, compressedDataSize );
+			len = uncompressedDataSize;
+		}
+		else {
+			len = Math.abs( compressedDataSize );
+		}
 
-        }
-        int numFaces = primitiveListIndices.length-1;
-        int numVertices = primitiveListIndices[numFaces];
+		int numFaces = this.primitiveListIndices.length - 1;
+		int numVertices = this.primitiveListIndices[numFaces];
 //        System.out.println(numFaces);
 //        System.out.println(numVertices);
-        
-        normal = new double[numVertices*3];
-        vertex = new double[numVertices*3];
-        for (int i=0;i<numVertices;i++) {
-            int j = i *3;
-            if (textureCoordBinding == 1) {
-                //reader.readF32();
-                //reader.readF32();
-            }
-            if (colorBinding == 1 ) {
-                reader.readF32();
-                reader.readF32();
-                reader.readF32();
-            }
-            if (normalBinding == 1) {
-                
-                normal[j+0] = reader.readF32();
-                normal[j+1] = reader.readF32();
-                normal[j+2] = reader.readF32();
 
-            }
-            vertex[j+0] = reader.readF32();
-            vertex[j+1] = reader.readF32();
-            vertex[j+2] = reader.readF32();  
+		this.normal = new double[numVertices * 3];
+		this.vertex = new double[numVertices * 3];
+		for ( int i = 0; i < numVertices; i++ ) {
+			int j = i * 3;
+			if ( textureCoordBinding == 1 ) {
+				//reader.readF32();
+				//reader.readF32();
+			}
+			if ( colorBinding == 1 ) {
+				this.reader.readF32();
+				this.reader.readF32();
+				this.reader.readF32();
+			}
+			if ( normalBinding == 1 ) {
+				this.normal[j + 0] = this.reader.readF32();
+				this.normal[j + 1] = this.reader.readF32();
+				this.normal[j + 2] = this.reader.readF32();
 
-        }
-
-
-    }
-
+			}
+			this.vertex[j + 0] = this.reader.readF32();
+			this.vertex[j + 1] = this.reader.readF32();
+			this.vertex[j + 2] = this.reader.readF32();
+		}
+	}
 }

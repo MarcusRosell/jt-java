@@ -27,44 +27,54 @@
  ******************************************************************************/
 package uk.ac.liv.jt.types;
 
-public class Vec3D {
+public class Vec3D
+{
 
-    double x, y, z;
+	double x;
+	double y;
+	double z;
 
-    public Vec3D(double x, double y, double z) {
-        super();
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+	public Vec3D( double x, double y, double z )
+	{
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
 
-    @Override
-    public String toString() {
-        return String.format("(%.4f, %.4f, %.4f)", x, y, z);
-    }
+	@Override
+	public String toString()
+	{
+		return String.format( "(%.4f, %.4f, %.4f)", this.x, this.y, this.z ); //$NON-NLS-1$
+	}
 
-    public double getX() {
-        return x;
-    }
+	public double getX()
+	{
+		return this.x;
+	}
 
-    public double getY() {
-        return y;
-    }
+	public double getY()
+	{
+		return this.y;
+	}
 
-    public double getZ() {
-        return z;
-    }
+	public double getZ()
+	{
+		return this.z;
+	}
 
-    public float getXf() {
-        return (float)x;
-    }
+	public float getXf()
+	{
+		return (float)this.x;
+	}
 
-    public float getYf() {
-        return (float)y;
-    }
+	public float getYf()
+	{
+		return (float)this.y;
+	}
 
-    public float getZf() {
-        return (float)z;
-    }
-    
+	public float getZf()
+	{
+		return (float)this.z;
+	}
+
 }

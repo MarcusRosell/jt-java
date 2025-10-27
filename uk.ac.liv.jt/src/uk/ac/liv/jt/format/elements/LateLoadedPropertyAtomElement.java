@@ -31,42 +31,43 @@ import java.io.IOException;
 
 import uk.ac.liv.jt.types.GUID;
 
-public class LateLoadedPropertyAtomElement extends BasePropertyAtomData {
+public class LateLoadedPropertyAtomElement extends BasePropertyAtomData
+{
+	GUID segmentId;
+	int segmentType;
 
-    GUID segmentId;
-    int segmentType;
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-    @Override
-    public void read() throws IOException {
-
-        super.read();
-
-        int versionNumber = -1;
-		if(getReader().MAJOR_VERSION >= 9){
-			reader.readBytes(2);
-			versionNumber = reader.readI16();
-			if(versionNumber != 1){
-				throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
+		int versionNumber = -1;
+		if ( getReader().MAJOR_VERSION >= 9 ) {
+			this.reader.readBytes( 2 );
+			versionNumber = this.reader.readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
 			}
 		}
 
-        segmentId = reader.readGUID();
-        segmentType = reader.readI32();
-        ovalue = segmentId;
+		this.segmentId = this.reader.readGUID();
+		this.segmentType = this.reader.readI32();
+		this.ovalue = this.segmentId;
 
-        int payLoadObjectID = -1;
-		if(getReader().MAJOR_VERSION >= 9){
-			payLoadObjectID = reader.readI32();
-			reader.readI32();
+		int payLoadObjectID = -1;
+		if ( getReader().MAJOR_VERSION >= 9 ) {
+			payLoadObjectID = this.reader.readI32();
+			this.reader.readI32();
 		}
 
-        // System.out.println("Late loaded:" + segmentId + " type " +
-        // segmentType);
-    }
+		// System.out.println("Late loaded:" + segmentId + " type " +
+		// segmentType);
+	}
 
-    @Override
-    public String toString() {
-        return "Late loaded segment: " + segmentId + " of type: " + segmentType;
-    }
+	@Override
+	public String toString()
+	{
+		return "Late loaded segment: " + this.segmentId + " of type: " + this.segmentType; //$NON-NLS-1$ //$NON-NLS-2$
+	}
 
 }

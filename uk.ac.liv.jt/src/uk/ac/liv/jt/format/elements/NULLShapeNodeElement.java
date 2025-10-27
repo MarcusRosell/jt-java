@@ -36,8 +36,6 @@ public class NULLShapeNodeElement extends BaseShapeNodeElement {
     @Override
     public void read() throws IOException {
         super.read();
-        versionNumber = reader.readI16();
-
+		this.versionNumber = this.reader.readI16();
     }
-
 }

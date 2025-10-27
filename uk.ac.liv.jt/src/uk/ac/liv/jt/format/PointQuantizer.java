@@ -33,41 +33,46 @@ import java.io.IOException;
  * Data collections; there is a separate Uniform Quantizer Data collection 
  * for the X, Y, and Z values of point coordinates. p. 244 */
 
-public class PointQuantizer {
+public class PointQuantizer
+{
 
+	ByteReader reader;
 
-    ByteReader reader;
+	JTUniformQuantizerData xQuantizerData;
+	JTUniformQuantizerData yQuantizerData;
+	JTUniformQuantizerData zQuantizerData;
 
-    JTUniformQuantizerData xQuantizerData;
-    JTUniformQuantizerData yQuantizerData;
-    JTUniformQuantizerData zQuantizerData;
+	public PointQuantizer( ByteReader reader )
+	{
+		super();
+		this.reader = reader;
 
-    public PointQuantizer(ByteReader reader) {
-        super();
-        this.reader = reader;
+		this.xQuantizerData = new JTUniformQuantizerData( this.reader );
+		this.yQuantizerData = new JTUniformQuantizerData( this.reader );
+		this.zQuantizerData = new JTUniformQuantizerData( this.reader );
 
-        xQuantizerData = new JTUniformQuantizerData(this.reader);
-        yQuantizerData = new JTUniformQuantizerData(this.reader);
-        zQuantizerData = new JTUniformQuantizerData(this.reader);
+	}
 
-    }
+	public void read() throws IOException
+	{
+		this.xQuantizerData.read();
+		this.yQuantizerData.read();
+		this.zQuantizerData.read();
+	}
 
-    public void read() throws IOException {
-        xQuantizerData.read();
-        yQuantizerData.read();
-        zQuantizerData.read();
-    }
+	public JTUniformQuantizerData getXQuantizerData()
+	{
+		return this.xQuantizerData;
+	}
 
-    public JTUniformQuantizerData getXQuantizerData() {
-        return xQuantizerData;
-    }
+	public JTUniformQuantizerData getYQuantizerData()
+	{
+		return this.yQuantizerData;
+	}
 
-    public JTUniformQuantizerData getYQuantizerData() {
-        return yQuantizerData;
-    }
-
-    public JTUniformQuantizerData getZQuantizerData() {
-        return zQuantizerData;
-    }
+	public JTUniformQuantizerData getZQuantizerData()
+	{
+		return this.zQuantizerData;
+	}
 
 }

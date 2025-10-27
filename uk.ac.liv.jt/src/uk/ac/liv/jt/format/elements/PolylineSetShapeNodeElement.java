@@ -36,7 +36,7 @@ public class PolylineSetShapeNodeElement extends VertexShapeNodeElement {
     @Override
     public void read() throws IOException {
         super.read();
-        areaFactor = reader.readF32();
+		this.areaFactor = this.reader.readF32();
 
     }
 

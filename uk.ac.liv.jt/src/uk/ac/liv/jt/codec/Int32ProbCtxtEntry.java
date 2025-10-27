@@ -27,51 +27,56 @@
  ******************************************************************************/
 package uk.ac.liv.jt.codec;
 
-public class Int32ProbCtxtEntry {
-	
+public class Int32ProbCtxtEntry
+{
 	/* An entry is a row of a table. p.229 */
 
-    long occCount; // Number of occurrences
-    long cumCount; // Cumulative number of occurrences
+	long occCount; // Number of occurrences
+	long cumCount; // Cumulative number of occurrences
 
-    long associatedValue;
-    long symbol; // Symbol
-    int nextContext; // Next context if this symbol seen
+	long associatedValue;
+	long symbol; // Symbol
+	int nextContext; // Next context if this symbol seen
 
-    public Int32ProbCtxtEntry(long symbol, long occCount, long cumCount,
-            long associatedValue, int nextContext) {
-        super();
-        this.symbol = symbol;
-        this.occCount = occCount;
-        this.cumCount = cumCount;
-        this.associatedValue = associatedValue;
-        this.nextContext = nextContext;
-    }
+	public Int32ProbCtxtEntry( long symbol, long occCount, long cumCount, long associatedValue, int nextContext )
+	{
+		super();
+		this.symbol = symbol;
+		this.occCount = occCount;
+		this.cumCount = cumCount;
+		this.associatedValue = associatedValue;
+		this.nextContext = nextContext;
+	}
 
-    public long getAssociatedValue() {
-        return associatedValue;
-    }
+	public long getAssociatedValue()
+	{
+		return this.associatedValue;
+	}
 
-    public long getSymbol() {
-        return symbol;
-    }
+	public long getSymbol()
+	{
+		return this.symbol;
+	}
 
-    public long getCumCount() {
-        return cumCount;
-    }
+	public long getCumCount()
+	{
+		return this.cumCount;
+	}
 
-    public long getOccCount() {
-        return occCount;
-    }
+	public long getOccCount()
+	{
+		return this.occCount;
+	}
 
-    public int getNextContext() {
-        return nextContext;
-    }
+	public int getNextContext()
+	{
+		return this.nextContext;
+	}
 
-    @Override
-    public String toString() {
-        return String.format("%d - %d(%d) - => %d - %d", symbol, occCount,
-                cumCount, associatedValue, nextContext);
-    }
+	@Override
+	public String toString()
+	{
+		return String.format( "%d - %d(%d) - => %d - %d", this.symbol, this.occCount, this.cumCount, this.associatedValue, this.nextContext ); //$NON-NLS-1$
+	}
 
 }

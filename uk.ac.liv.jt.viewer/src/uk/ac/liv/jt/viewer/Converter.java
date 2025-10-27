@@ -301,7 +301,7 @@ public class Converter
 		app.setAttribute( CommonAttributes.TRANSPARENCY_ENABLED, true );
 		app.setAttribute( POLYGON_SHADER + "." + TRANSPARENCY, .8 );
 		app.setAttribute( CommonAttributes.AMBIENT_COLOR, new java.awt.Color( (float)Math.random(), (float)Math.random(), (float)Math.random() ) );
-		Rectangle3D r = BoundingBoxUtility.calculateBoundingBox( new double[][] { self.untransformedBox.maxCorner.getVectorDouble(), self.untransformedBox.minCorner.getVectorDouble() } );
+		Rectangle3D r = BoundingBoxUtility.calculateBoundingBox( new double[][] { self.untransformedBox.getMaxCorner().getVectorDouble(), self.untransformedBox.getMinCorner().getVectorDouble() } );
 		IndexedFaceSet cubo = IndexedFaceSetUtility.representAsSceneGraph( r );
 		SceneGraphComponent c = SceneGraphUtility.createFullSceneGraphComponent( s );
 		c.setAppearance( app );

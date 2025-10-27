@@ -30,6 +30,7 @@ package uk.ac.liv.jt.format.elements;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 /** 
  * This class represent Geometric Transformations according to the specified matrix, where 
  * only the values different from the identity matrix are taken into consideration.
@@ -38,49 +39,52 @@ import java.io.StringWriter;
  * @author fabio
  *
  */
-public class GeometricTransformAttributeElement extends BaseAttributeElement {
+public class GeometricTransformAttributeElement extends BaseAttributeElement
+{
 
-    double[] transform;
+	double[] transform;
 
-    @Override
-    public void read() throws IOException {
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-        super.read();
+		int storeValueMask = this.reader.readU16();
 
-        int storeValueMask = reader.readU16();
+		int c = storeValueMask;
+		this.transform = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+				1 };
+		int readValues = 0;
+		for ( int i = 0; i < 16; i++ ) {
+			if ( (c & 0x8000) != 0 ) {
+				this.transform[i] = this.reader.readF32();
+				readValues++;
+			}
+			c = c << 1;
+		}
 
-        int c = storeValueMask;
-        transform = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-                1 };
-                int readValues = 0;
-        for (int i = 0; i < 16; i++) {
-            if ((c & 0x8000) != 0){
-                        transform[i] = reader.readF32();
-                                readValues++;
-                }
-            c = c << 1;
-        }
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			this.reader.readBytes( readValues * 4 );
+		}
+		//System.out.println(this);
+	}
 
-        if(reader.MAJOR_VERSION >= 9){
-            reader.readBytes(readValues * 4);
-        }
-        //System.out.println(this);
-    }
+	@Override
+	public String toString()
+	{
+		StringWriter s = new StringWriter();
+		PrintWriter pw = new PrintWriter( s );
+		for ( int i = 0; i < this.transform.length; i++ ) {
+			pw.printf( "%+4f ", this.transform[i] ); //$NON-NLS-1$
+			if ( (i + 1) % 4 == 0 )
+				pw.println();
+		}
+		return "Transform matrix\n" + s.toString(); //$NON-NLS-1$
+	}
 
-    @Override
-    public String toString() {
-        StringWriter s = new StringWriter();
-        PrintWriter pw = new PrintWriter(s);
-        for (int i = 0; i < transform.length; i++) {
-            pw.printf("%+4f ", transform[i]);
-            if ((i + 1) % 4 == 0)
-                pw.println();
-        }
-        return "Transform matrix\n" + s.toString();
-    }
-    
-    public double[] getTransformationMatrix() {
-        return transform;
-    }
+	public double[] getTransformationMatrix()
+	{
+		return this.transform;
+	}
 
 }

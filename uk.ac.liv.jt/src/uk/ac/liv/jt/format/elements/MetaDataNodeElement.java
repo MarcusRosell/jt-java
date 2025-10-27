@@ -35,19 +35,15 @@ import java.io.IOException;
  * @author fabio
  *
  */
-public class MetaDataNodeElement extends GroupNodeElement {
-  
-private short versionNumber;
-    
-@Override
-    public void read() throws IOException {
-        
-        super.read();
-        
-        versionNumber = reader.readI16();
-       // System.out.println(versionNumber);
-    }
+public class MetaDataNodeElement extends GroupNodeElement
+{
+	private short versionNumber;
 
-
-
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
+		this.versionNumber = this.reader.readI16();
+		// System.out.println(versionNumber);
+	}
 }

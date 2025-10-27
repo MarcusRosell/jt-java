@@ -36,12 +36,12 @@ public class IntegerPropertyAtomElement extends BasePropertyAtomData {
     public void read() throws IOException {
         super.read();
 
-        value = reader.readI32();
-        ovalue = value;
+		this.value = this.reader.readI32();
+		this.ovalue = this.value;
     }
 
     @Override
     public String toString() {
-        return "" + value;
+		return "" + this.value; //$NON-NLS-1$
     }
 }

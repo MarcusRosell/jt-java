@@ -37,10 +37,8 @@ public class LODNodeElement extends GroupNodeElement {
         super.read();
 
         // reserved
-        reader.readVecF32();
+		this.reader.readVecF32();
         // reserved
-        reader.readI32();
-
+		this.reader.readI32();
     }
-
 }

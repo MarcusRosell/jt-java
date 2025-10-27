@@ -1,3 +1,8 @@
 eclipse.preferences.version=1
+encoding//src/uk/ac/liv/jt/codec/Int32ProbCtxts.java=UTF-8
+encoding//src/uk/ac/liv/jt/format/JTQuantizationParam.java=UTF-8
+encoding//src/uk/ac/liv/jt/format/LossyQuantizedRawVertexData.java=UTF-8
+encoding//src/uk/ac/liv/jt/format/QuantizedVertexCoordArray.java=UTF-8
+encoding//src/uk/ac/liv/jt/format/QuantizedVertexNormalArray.java=UTF-8
 encoding//src/uk/ac/liv/jt/format/elements/TriStripSetShapeLODElement.java=UTF-8
 encoding/<project>=windows-1252

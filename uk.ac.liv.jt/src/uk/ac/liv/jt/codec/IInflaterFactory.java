@@ -9,8 +9,8 @@ package uk.ac.liv.jt.codec;
  * 
  * @author przym
  */
-public interface IInflaterFactory {
-    
-    public IInflater createInflater();
-    
+public interface IInflaterFactory
+{
+	public IInflater createInflater();
+
 }

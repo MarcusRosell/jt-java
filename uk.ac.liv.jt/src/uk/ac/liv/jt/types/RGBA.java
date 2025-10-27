@@ -29,69 +29,82 @@ package uk.ac.liv.jt.types;
 
 import java.awt.Color;
 
-
 /**
  *   A float representation of a colour. Used instead of {@link Color} so that it does not require 
  *   instatiating additional AWT system (for performance reasons).
  * @author fabio
  *
  */
-public class RGBA {
+public class RGBA
+{
 
-    public float r, g, b, a;
+	public float r;
+	public float g;
+	public float b;
+	public float a;
 
-    public Color getColor() {
-        return new Color(r, g, b, a);
-    }
-    
-    
-    public float[] getColorTable() {
-        float[] ret = new float[4];
-        ret[0] = r;
-        ret[1] = g;
-        ret[2] = b;
-        ret[3] = a;
-        return ret;
-    }
+	public Color getColor()
+	{
+		return new Color( this.r, this.g, this.b, this.a );
+	}
 
-    public RGBA(float r, float g, float b, float a) {
-        super();
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-    }
+	public float[] getColorTable()
+	{
+		float[] ret = new float[4];
+		ret[0] = this.r;
+		ret[1] = this.g;
+		ret[2] = this.b;
+		ret[3] = this.a;
+		return ret;
+	}
 
-    public float getR() {
-        return r;
-    }
+	public RGBA( float r, float g, float b, float a )
+	{
+		super();
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
+	}
 
-    public void setR(float r) {
-        this.r = r;
-    }
+	public float getR()
+	{
+		return this.r;
+	}
 
-    public float getG() {
-        return g;
-    }
+	public void setR( float r )
+	{
+		this.r = r;
+	}
 
-    public void setG(float g) {
-        this.g = g;
-    }
+	public float getG()
+	{
+		return this.g;
+	}
 
-    public float getB() {
-        return b;
-    }
+	public void setG( float g )
+	{
+		this.g = g;
+	}
 
-    public void setB(float b) {
-        this.b = b;
-    }
+	public float getB()
+	{
+		return this.b;
+	}
 
-    public float getA() {
-        return a;
-    }
+	public void setB( float b )
+	{
+		this.b = b;
+	}
 
-    public void setA(float a) {
-        this.a = a;
-    }
+	public float getA()
+	{
+		return this.a;
+	}
+
+	public void setA( float a )
+	{
+		this.a = a;
+	}
 
 }

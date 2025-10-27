@@ -42,7 +42,7 @@ public class JTNode extends JTElement {
     public int objectID;
 
     public int getObjectID() {
-        return objectID;
+		return this.objectID;
     }
 
     public void setObjectID(int objectID) {
@@ -51,12 +51,12 @@ public class JTNode extends JTElement {
 
     @Override
     public void read() throws IOException {
-        objectID = getReader().readI32();
+		this.objectID = getReader().readI32();
 
     }
 
     @Override
     public String toString() {
-        return " (" + objectID+")";
+		return " (" + this.objectID + ")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

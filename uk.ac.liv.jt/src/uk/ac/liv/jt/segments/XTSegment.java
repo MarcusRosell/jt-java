@@ -27,6 +27,8 @@
  ******************************************************************************/
 package uk.ac.liv.jt.segments;
 
+import uk.ac.liv.jt.internal.BundleAccessor;
+
 /**
  * XT Brep segment represent data in the XT Parasolid format. TODO: impement
  * 
@@ -38,8 +40,6 @@ public class XTSegment extends JTSegment {
     @Override
     public void read() throws java.io.IOException {
         super.read();
-        System.err.println("Todo: implement " + getClass().getSimpleName());
-
-        // TODO: Implement actual method.
+		BundleAccessor.getLogger().info( "No support for {}", getClass().getSimpleName() ); //$NON-NLS-1$
     }
 }

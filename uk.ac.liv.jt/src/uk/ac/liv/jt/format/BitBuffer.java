@@ -29,91 +29,92 @@ package uk.ac.liv.jt.format;
 
 import java.nio.ByteBuffer;
 
-public class BitBuffer {
+public class BitBuffer
+{
 
 	ByteBuffer buffer;
 	int bitBuffer; // Temporary i/o buffer
-    int nBits; // Number of bits in bitBuffer
+	int nBits; // Number of bits in bitBuffer
 
 	int bitPos;
-	
-	
 
-	public BitBuffer(ByteBuffer buffer) {
+	public BitBuffer( ByteBuffer buffer )
+	{
 		super();
 		this.buffer = buffer;
 		this.bitPos = 0;
 		this.bitBuffer = 0x0000;
-        this.nBits = 0;
+		this.nBits = 0;
 	}
 
-	
-	public int getBitPos() {
-		return bitPos;
+	public int getBitPos()
+	{
+		return this.bitPos;
 	}
-	
-	
-	public long getBitBufBitSize() {
+
+	public long getBitBufBitSize()
+	{
 		return this.buffer.limit() * 8;
-		
+
 	}
-	
-	public long readAsLong(int nbBits) {
-		return readAsLong(0, nbBits);
+
+	public long readAsLong( int nbBits )
+	{
+		return readAsLong( 0, nbBits );
 	}
-	
-	
+
 	/* Read specified number of bits (max 32) starting from the given bit 
 	 * position, return the value as long.
 	 */
-	public long readAsLong(long bPos, int nbBits) {
+	public long readAsLong( long argBPos, int nbBits )
+	{
 		long value = 0;
+		long bPos = argBPos;
 		long len = bPos + nbBits;
-			
+
 		// len = number of bits to read, we skip bPos bits and create a long
 		// with nbBits bits
-		while (len > 0) {
+		while ( len > 0 ) {
 			// Not enough bits in the buffer => We read another byte
-			if (this.nBits == 0) {
-				bitBuffer = buffer.get();
+			if ( this.nBits == 0 ) {
+				this.bitBuffer = this.buffer.get();
 				this.nBits = 8;
-				bitBuffer &= 0xFFL;
+				this.bitBuffer &= 0xFFL;
 			}
-			
+
 			// This test skips the first bPos bits
-			if (bPos == 0) {				
-				value <<= 1;	
+			if ( bPos == 0 ) {
+				value <<= 1;
 				// The value of the msb is added to the value result
-				value |= (bitBuffer >> 7);
-			} else {
+				value |= (this.bitBuffer >> 7);
+			}
+			else {
 				bPos--;
 			}
 			// Remove the msb so the 2nd bit becomes the msb
-			bitBuffer <<= 1;
-			bitBuffer &= 0xFFL;
+			this.bitBuffer <<= 1;
+			this.bitBuffer &= 0xFFL;
 			this.nBits--;
 			len--;
 			this.bitPos++;
-	   }
-		
+		}
+
 		return value;
 	}
-	
-	
 
-	public int readAsInt(int nbBits) {
-		return (int)readAsLong(nbBits);
+	public int readAsInt( int nbBits )
+	{
+		return (int)readAsLong( nbBits );
 	}
 
-	public int readAsInt(long bitPos, int nbBits) {
-		return (int)readAsLong(bitPos, nbBits);
+	public int readAsInt( long bitPos, int nbBits )
+	{
+		return (int)readAsLong( bitPos, nbBits );
 	}
 
-	
-
-	public byte readAsByte(int nbBits) {
-		return (byte)readAsLong(nbBits);
+	public byte readAsByte( int nbBits )
+	{
+		return (byte)readAsLong( nbBits );
 	}
-	
-	
+
 }

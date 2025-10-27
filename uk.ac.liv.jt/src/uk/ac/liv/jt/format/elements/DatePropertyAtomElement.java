@@ -31,38 +31,39 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
 /** 
  * Expresses a 'date' property.
  * @author fabio
  *
  */
-public class DatePropertyAtomElement extends BasePropertyAtomData {
+public class DatePropertyAtomElement extends BasePropertyAtomData
+{
+	public Date date;
 
-    public Date date;
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
+		short y = this.reader.readI16();
+		short month = this.reader.readI16();
+		short d = this.reader.readI16();
+		short h = this.reader.readI16();
+		short minute = this.reader.readI16();
+		short s = this.reader.readI16();
 
-    @Override
-    public void read() throws IOException {
-        super.read();
-        short y = reader.readI16();
-        short month = reader.readI16();
-        short d = reader.readI16();
-        short h = reader.readI16();
-        short minute = reader.readI16();
-        short s = reader.readI16();
+		// Specification does not mention time zone or else; so we assume GMT
+		// lacking better information
+		Calendar c = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) ); //$NON-NLS-1$
+		c.set( y, month, d, h, minute, s );
+		this.date = c.getTime();
+		this.ovalue = this.date;
+		// System.out.println("For ID " + objectID + " Date " + date);
+	}
 
-        // Specification does not mention time zone or else; so we assume GMT
-        // lacking better information
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        c.set(y, month, d, h, minute, s);
-        date = c.getTime();
-        ovalue = date;
-        // System.out.println("For ID " + objectID + " Date " + date);
-
-    }
-
-    @Override
-    public String toString() {
-        return date.toString();
-    }
-
+	@Override
+	public String toString()
+	{
+		return this.date.toString();
+	}
 }

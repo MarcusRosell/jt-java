@@ -38,65 +38,73 @@ import uk.ac.liv.jt.types.RGBA;
  * @author fabio
  *
  */
-public class MaterialAttributeElement extends BaseAttributeElement {
+public class MaterialAttributeElement extends BaseAttributeElement
+{
 
-    /** see documentation */
-    public int dataFlags;
+	/** see documentation */
+	public int dataFlags;
 
-    public float shineness;
+	public float shineness;
 
-    public RGBA ambient, emission, specular, diffuse;
+	public RGBA ambient, emission, specular, diffuse;
 
-    @Override
-    public void read() throws IOException {
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-        super.read();
+		int versionNumber = -1;
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			versionNumber = this.reader.readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
+			}
+		}
 
-        int versionNumber = -1;
-                if(reader.MAJOR_VERSION >= 9){
-                        versionNumber = reader.readI16();
-                        if(versionNumber != 1){
-                                throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
-                        }
-                }
+		this.dataFlags = this.reader.readU16();
 
-        dataFlags = reader.readU16();
+		if ( (this.dataFlags & 0x1) != 0 && (this.dataFlags & 0x2) != 0 ) {
+			this.ambient = this.reader.readColorF();
+		}
+		else {
+			this.ambient = this.reader.readColor();
+		}
 
-        if ((dataFlags & 0x1) != 0 && (dataFlags & 0x2) != 0)
-            ambient = reader.readColorF();
-        else
-            ambient = reader.readColor();
+		this.diffuse = this.reader.readColor();
+		if ( (this.dataFlags & 0x1) != 0 && (this.dataFlags & 0x4) != 0 ) {
+			this.specular = this.reader.readColorF();
+		}
+		else {
+			this.specular = this.reader.readColor();
+		}
+		if ( (this.dataFlags & 0x1) != 0 && (this.dataFlags & 0x8) != 0 ) {
+			this.emission = this.reader.readColorF();
+		}
+		else {
+			this.emission = this.reader.readColor();
+		}
+		this.shineness = this.reader.readF32();
 
-        diffuse = reader.readColor();
-        if ((dataFlags & 0x1) != 0 && (dataFlags & 0x4) != 0)
-            specular = reader.readColorF();
-        else
-            specular = reader.readColor();
-        if ((dataFlags & 0x1) != 0 && (dataFlags & 0x8) != 0)
-            emission = reader.readColorF();
-        else
-            emission = reader.readColor();
-        shineness = reader.readF32();
+	}
 
-    }
+	@Override
+	public String toString()
+	{
+		return "Material attribute"; //$NON-NLS-1$
+	}
 
-    @Override
-    public String toString() {
-        return "Material attribute";
-
-    }
-    
-    /**
-     * Returns a AppearanceData containing the specific material attributes.
-     * @return AppearanceData
-     */
-    public AppearanceData getAppearanceData() {
-        AppearanceData appD = new AppearanceData();
-        appD.shineness = shineness;
-        appD.ambient = ambient;
-        appD.specular = specular;
-        appD.diffuse = diffuse;
-        appD.emission = emission;
-        return appD;
-    }
+	/**
+	 * Returns a AppearanceData containing the specific material attributes.
+	 * @return AppearanceData
+	 */
+	public AppearanceData getAppearanceData()
+	{
+		AppearanceData appD = new AppearanceData();
+		appD.shineness = this.shineness;
+		appD.ambient = this.ambient;
+		appD.specular = this.specular;
+		appD.diffuse = this.diffuse;
+		appD.emission = this.emission;
+		return appD;
+	}
 }

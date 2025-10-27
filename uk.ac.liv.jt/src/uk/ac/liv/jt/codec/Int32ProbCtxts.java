@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This Library is :
  * 
- *     Copyright © 2010 Jerome Fuselier and Fabio Corubolo - all rights reserved
+ *     Copyright Â© 2010 Jerome Fuselier and Fabio Corubolo - all rights reserved
  *     jerome.fuselier@gmail.com ; corubolo@gmail.com
  * 
  *     This program is free software: you can redistribute it and/or modify
@@ -34,107 +34,118 @@ import java.util.Map;
 import uk.ac.liv.jt.debug.DebugInfo;
 import uk.ac.liv.jt.format.BitReader;
 import uk.ac.liv.jt.format.ByteReader;
+import uk.ac.liv.jt.internal.BundleAccessor;
 
-public class Int32ProbCtxts {
-	
+public class Int32ProbCtxts
+{
+
 	/* Int32 Probability Contexts data collection is a list of Probability 
 	 * Context Tables. The Int32 Probability Contexts data collection is only 
 	 * present for Huffman and Arithmetic CODEC Types. p.226
 	 */
 
-    private ByteReader reader;
-    long nbValueBits, minValue;
-    int contextTableCount = 0;
-    public Int32ProbCtxtTable[] probContextTables = new Int32ProbCtxtTable[0];
-    int[] outOfBandValues;
+	private ByteReader reader;
+	long nbValueBits;
+	long minValue;
+	int contextTableCount = 0;
+	public Int32ProbCtxtTable[] probContextTables = new Int32ProbCtxtTable[0];
+	int[] outOfBandValues;
 
-    public long nbOccCountBits;
-    
-    public Map<Object,Long> assValues = new HashMap<Object, Long>();
+	public long nbOccCountBits;
 
+	public Map<Object, Long> assValues = new HashMap<>();
 
+	public int[] getOutOfBandValues()
+	{
+		return this.outOfBandValues;
+	}
 
-    public int[] getOutOfBandValues() {
-        return outOfBandValues;
-    }
+	public void setOutOfBandValues( int[] outOfBandValues )
+	{
+		this.outOfBandValues = outOfBandValues;
+	}
 
-    public void setOutOfBandValues(int[] outOfBandValues) {
-        this.outOfBandValues = outOfBandValues;
-    }
+	public Int32ProbCtxtTable[] getProbContextTables()
+	{
+		return this.probContextTables;
+	}
 
-    public Int32ProbCtxtTable[] getProbContextTables() {
-        return probContextTables;
-    }
+	public int getContextTableCount()
+	{
+		return this.probContextTables.length;
+	}
 
-    public int getContextTableCount() {
-        return probContextTables.length;
-    }
+	public Int32ProbCtxts( ByteReader reader )
+	{
+		this.reader = reader;
+		this.outOfBandValues = new int[0];
+	}
 
-    public Int32ProbCtxts(ByteReader reader) {
-        this.reader = reader;
-        outOfBandValues = new int[0];
-    }
+	public long getNbValueBits()
+	{
+		return this.nbValueBits;
+	}
 
-    public long getNbValueBits() {
-        return nbValueBits;
-    }
+	public void setNbValueBits( long nbValueBits )
+	{
+		this.nbValueBits = nbValueBits;
+	}
 
-    public void setNbValueBits(long nbValueBits) {
-        this.nbValueBits = nbValueBits;
-    }
+	public long getMinValue()
+	{
+		return this.minValue;
+	}
 
-    public long getMinValue() {
-        return minValue;
-    }
+	public void setMinValue( long minValue )
+	{
+		this.minValue = minValue;
+	}
 
-    public void setMinValue(long minValue) {
-        this.minValue = minValue;
-    }
+	/*
+	 * totalCount â€“ Refers to the sum of the â€œOccurrence Countâ€� values for all
+	 * the symbols associated with a Probability Context.
+	 */
+	public int getTotalCount()
+	{
+		int totalCount = 0;
 
-    /*
-     * totalCount – Refers to the sum of the “Occurrence Count” values for all
-     * the symbols associated with a Probability Context.
-     */
-    public int getTotalCount() {
-        int totalCount = 0;
+		for ( Int32ProbCtxtTable probContextTable : this.probContextTables ) {
+			totalCount += probContextTable.getTotalCount();
+		}
+		return totalCount;
+	}
 
-        for (Int32ProbCtxtTable probContextTable : probContextTables)
-            totalCount += probContextTable.getTotalCount();
+	// Returns the probability context for a given index
+	public Int32ProbCtxtTable getContext( int ctxt )
+	{
+		return this.probContextTables[ctxt];
+	}
 
-        return totalCount;
-    }
+	public void read( int codecType ) throws IOException
+	{
+		this.contextTableCount = this.reader.readU8();
 
-    // Returns the probability context for a given index
-    public Int32ProbCtxtTable getContext(int ctxt) {
-        return probContextTables[ctxt];
-    }
+		if ( DebugInfo.debugCodec ) {
+			BundleAccessor.getLogger().info( "\n == Probability Context ==\n" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Prob Context Table Count: {}", this.contextTableCount ); //$NON-NLS-1$
+		}
 
-    public void read(int codecType) throws IOException {
-        contextTableCount = reader.readU8();
+		BitReader bitReader = new BitReader( this.reader );
 
-        if (DebugInfo.debugCodec) {
-            System.out.println("\n == Probability Context ==\n");
-            System.out
-                    .println("Prob Context Table Count: " + contextTableCount);
-        }
+		this.probContextTables = new Int32ProbCtxtTable[this.contextTableCount];
 
-        BitReader bitReader = new BitReader(reader);
+		for ( int i = 0; i < this.contextTableCount; i++ ) {
+			this.probContextTables[i] = new Int32ProbCtxtTable( this, bitReader );
+			this.probContextTables[i].read( i == 0, codecType );
+		}
 
-        probContextTables = new Int32ProbCtxtTable[contextTableCount];
-
-        for (int i = 0; i < contextTableCount; i++) {
-            probContextTables[i] = new Int32ProbCtxtTable(this, bitReader);
-            probContextTables[i].read(i == 0, codecType);
-        }
-
-        // Alignments bits : See rev-D specification on page 228
-        if (bitReader.getNbBitsLeft() > 0) {
-            int aligmentsBits = bitReader.getBitBuf().readAsInt(
-                    bitReader.getNbBitsLeft());
-            if (aligmentsBits != 0)
-                System.err
-                        .println("Problem with alignments bits in the parsing of a probabilistic context table");
-        }
-    }
+		// Alignments bits : See rev-D specification on page 228
+		if ( bitReader.getNbBitsLeft() > 0 ) {
+			int aligmentsBits = bitReader.getBitBuf().readAsInt( bitReader.getNbBitsLeft() );
+			if ( aligmentsBits != 0 ) {
+				BundleAccessor.getLogger().info( "Problem with alignments bits in the parsing of a probabilistic context table" ); //$NON-NLS-1$
+			}
+		}
+	}
 
 }

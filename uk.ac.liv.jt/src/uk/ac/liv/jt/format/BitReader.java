@@ -30,74 +30,84 @@ package uk.ac.liv.jt.format;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+public class BitReader
+{
 
-public class BitReader {
-	
 	/* Give a way to read a ByteBuffer "bit by bit".
 	 * The ByteReader given at the creation is used to read bytes and the 
 	 * readU32(nbBits) method read nbbits bits in the bytes read.
 	 */
 
-    private ByteReader reader;
-    BitBuffer bitBuf;
+	private ByteReader reader;
+	BitBuffer bitBuf;
 
-    public BitReader(ByteReader reader) {
-        this.reader = reader;
-        bitBuf = new BitBuffer(ByteBuffer.wrap(new byte[0]));
-    }
+	public BitReader( ByteReader reader )
+	{
+		this.reader = reader;
+		this.bitBuf = new BitBuffer( ByteBuffer.wrap( new byte[0] ) );
+	}
 
-    public int getNbBitsLeft() {
-        return (int) (bitBuf.getBitBufBitSize() - bitBuf.getBitPos());
-    }
+	public int getNbBitsLeft()
+	{
+		return (int)(this.bitBuf.getBitBufBitSize() - this.bitBuf.getBitPos());
+	}
 
-    /* Read an U32 encoded on nbBits bits */
-    public long readU32(int nbBits) throws IOException {
-        if (nbBits == 0)
-            return 0;
+	/* Read an U32 encoded on nbBits bits */
+	public long readU32( int nbBits ) throws IOException
+	{
+		if ( nbBits == 0 ) {
+			return 0;
+		}
 
-        int nbLeft = getNbBitsLeft();
+		int nbLeft = getNbBitsLeft();
 
-        // If there are not enough bits already read and stored in bitBuf we 
-        // read additional bytes and update the bitBuffer
-        if (nbLeft < nbBits) {
-            int nbBytes = ((nbBits - nbLeft - 1) / 8) + 1;
-            int sizeBytes = nbBytes;
-            int cpt = 0;
+		// If there are not enough bits already read and stored in bitBuf we 
+		// read additional bytes and update the bitBuffer
+		if ( nbLeft < nbBits ) {
+			int nbBytes = ((nbBits - nbLeft - 1) / 8) + 1;
+			int sizeBytes = nbBytes;
+			int cpt = 0;
 
-            if (nbLeft != 0)
-                sizeBytes += 1;
+			if ( nbLeft != 0 ) {
+				sizeBytes += 1;
+			}
 
-            byte[] byteBuf = new byte[sizeBytes];
+			byte[] byteBuf = new byte[sizeBytes];
 
-            if (nbLeft != 0) {
-                byte remainingByte = bitBuf.readAsByte(nbLeft);
-                byteBuf[cpt] = remainingByte;
-                cpt += 1;
-            }
+			if ( nbLeft != 0 ) {
+				byte remainingByte = this.bitBuf.readAsByte( nbLeft );
+				byteBuf[cpt] = remainingByte;
+				cpt += 1;
+			}
 
-            byte[] tmpBytes = reader.readBytes(nbBytes);
+			byte[] tmpBytes = this.reader.readBytes( nbBytes );
 
-            for (int i = cpt; i < sizeBytes; i++)
-                byteBuf[i] = tmpBytes[i - cpt];
+			for ( int i = cpt; i < sizeBytes; i++ ) {
+				byteBuf[i] = tmpBytes[i - cpt];
+			}
 
-            bitBuf = new BitBuffer(ByteBuffer.wrap(byteBuf));
+			this.bitBuf = new BitBuffer( ByteBuffer.wrap( byteBuf ) );
 
-        }
+		}
 
-        // Read the int
-        if (nbLeft > 0) {
-            if (nbLeft < nbBits)
-                return bitBuf.readAsInt(8 - nbLeft, nbBits);
-            else
-                return bitBuf.readAsInt(nbBits);
-        } else {
-            long res = bitBuf.readAsInt(nbBits);
-            return res;
-        }
-    }
+		// Read the int
+		if ( nbLeft > 0 ) {
+			if ( nbLeft < nbBits ) {
+				return this.bitBuf.readAsInt( 8 - nbLeft, nbBits );
+			}
+			else {
+				return this.bitBuf.readAsInt( nbBits );
+			}
+		}
+		else {
+			long res = this.bitBuf.readAsInt( nbBits );
+			return res;
+		}
+	}
 
-    public BitBuffer getBitBuf() {
-        return bitBuf;
-    }
+	public BitBuffer getBitBuf()
+	{
+		return this.bitBuf;
+	}
 
 }

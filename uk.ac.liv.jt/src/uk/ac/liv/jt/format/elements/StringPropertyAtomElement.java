@@ -29,30 +29,33 @@ package uk.ac.liv.jt.format.elements;
 
 import java.io.IOException;
 
-public class StringPropertyAtomElement extends BasePropertyAtomData {
+public class StringPropertyAtomElement extends BasePropertyAtomData
+{
 
-    public String value;
+	public String value;
 
-    @Override
-    public void read() throws IOException {
-        super.read();
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-        int versionNumber = -1;
-		if(getReader().MAJOR_VERSION >= 9){
-			reader.readBytes(2);
-			versionNumber = reader.readI16();
-			if(versionNumber != 1){
-				throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
+		int versionNumber = -1;
+		if ( getReader().MAJOR_VERSION >= 9 ) {
+			this.reader.readBytes( 2 );
+			versionNumber = this.reader.readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
 			}
 		}
-			
-        value = reader.readMbString();
-        // System.out.println("Value: " + value);
-        ovalue = value;
-    }
 
-    @Override
-    public String toString() {
-        return "" + value;
-    }
+		this.value = this.reader.readMbString();
+		// System.out.println("Value: " + value);
+		this.ovalue = this.value;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "" + this.value; //$NON-NLS-1$
+	}
 }

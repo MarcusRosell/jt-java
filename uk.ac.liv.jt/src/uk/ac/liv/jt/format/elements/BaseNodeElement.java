@@ -34,64 +34,68 @@ import java.io.IOException;
  * @author fabio
  *
  */
-public class BaseNodeElement extends JTNode {
+public class BaseNodeElement extends JTNode
+{
 
-    public long nodeFlags;
-    public int[] attObjectId;
-    /** attributes for the node are filled in in the LSGSegmetn class */
-    public BaseAttributeElement[] attributes;
-    /** properties for the node are filled in in the LSGSegmetn class */
-    public BasePropertyAtomData[][] properties;
+	public long nodeFlags;
+	public int[] attObjectId;
+	/** attributes for the node are filled in in the LSGSegmetn class */
+	public BaseAttributeElement[] attributes;
+	/** properties for the node are filled in in the LSGSegmetn class */
+	public BasePropertyAtomData[][] properties;
 
-    public boolean ignore() {
-        if ((nodeFlags & 1) == 1)
-            return true;
-        else
-            return false;
-    }
+	public boolean ignore()
+	{
+		if ( (this.nodeFlags & 1) == 1 ) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
-    @Override
-    public void read() throws IOException {
-         super.read();
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 //         System.out.println("Object ID: " + objectID + " class " +
 //         this.getClass().getSimpleName());
 
-         short versionNumber = -1;
-         if(reader.MAJOR_VERSION >= 9){
-                        versionNumber = getReader().readI16();
-                        if(versionNumber != 1){
-                                throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
-                        }
-                }
+		short versionNumber = -1;
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			versionNumber = getReader().readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
+			}
+		}
 
-        nodeFlags = getReader().readU32();
+		this.nodeFlags = getReader().readU32();
 
-        int attCount = getReader().readI32();
+		int attCount = getReader().readI32();
 
-        attObjectId = new int[attCount];
-        attributes = new BaseAttributeElement[attCount];
+		this.attObjectId = new int[attCount];
+		this.attributes = new BaseAttributeElement[attCount];
 
-        // if (attCount > 0)
-        // System.out.print("Attr IDs: ");
-        for (int i = 0; i < attCount; i++)
-            attObjectId[i] = getReader().readI32();
-        // System.out.print(attObjectId[i] + " ");
+		// if (attCount > 0)
+		// System.out.print("Attr IDs: ");
+		for ( int i = 0; i < attCount; i++ ) {
+			this.attObjectId[i] = getReader().readI32();
+		}
+		// System.out.print(attObjectId[i] + " ");
 
-    }
+	}
 
-    @Override
-    public String toString() {
-        if (properties!=null)
-        for (int i=0;i<properties.length;i++){
-                if (properties[i][0] != null)
-                    if (properties[i][0].ovalue != null)
-            if (properties[i][0].ovalue instanceof String) {
-                String s = (String) properties[i][0].ovalue;
-                if (s.compareTo("JT_PROP_NAME")==0)
-                    return  properties[i][1].ovalue  + (this.getClass().getSimpleName().replaceAll("[a-z]", ""))   + super.toString() ;
-                }
-        }
-        return (this.getClass().getSimpleName().replaceAll("[a-z]", ""))   + super.toString() ;
-    }
+	@Override
+	public String toString()
+	{
+		if ( this.properties != null ) {
+			for ( int i = 0; i < this.properties.length; i++ ) {
+				if ( this.properties[i][0] != null && this.properties[i][0].ovalue instanceof String s && s.compareTo( "JT_PROP_NAME" ) == 0 ) { //$NON-NLS-1$
+					return this.properties[i][1].ovalue + (this.getClass().getSimpleName().replaceAll( "[a-z]", "" )) + super.toString(); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		}
+		return (this.getClass().getSimpleName().replaceAll( "[a-z]", "" )) + super.toString(); //$NON-NLS-1$ //$NON-NLS-2$
+	}
 
 }

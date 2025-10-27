@@ -31,9 +31,11 @@ import java.io.IOException;
 
 import uk.ac.liv.jt.debug.DebugInfo;
 import uk.ac.liv.jt.format.BitReader;
+import uk.ac.liv.jt.internal.BundleAccessor;
 
-public class Int32ProbCtxtTable {
-	
+public class Int32ProbCtxtTable
+{
+
 	/* A Probability Context Table is a trimmed and scaled histogram of the 
 	 * input values. It tallies the frequencies of the several most frequently 
 	 * occurring values. It is central to the operation of the arithmetic CODEC, 
@@ -41,125 +43,126 @@ public class Int32ProbCtxtTable {
 	 * for the Huffman CODEC. p.227
 	 */
 
-    private BitReader reader;
-    Int32ProbCtxts probCtxt;
+	private BitReader reader;
+	Int32ProbCtxts probCtxt;
 
-    long nbSymbolBits;
-    long nbOccCountBits;
-    long nbNextContextBits;
+	long nbSymbolBits;
+	long nbOccCountBits;
+	long nbNextContextBits;
 
-    Int32ProbCtxtEntry[] entries;
+	Int32ProbCtxtEntry[] entries;
 
-    public Int32ProbCtxtEntry[] getEntries() {
-        return entries;
-    }
+	public Int32ProbCtxtEntry[] getEntries()
+	{
+		return this.entries;
+	}
 
-    public Int32ProbCtxtTable(Int32ProbCtxts probCtxt, BitReader reader) {
-        this.reader = reader;
-        this.probCtxt = probCtxt;
-    }
+	public Int32ProbCtxtTable( Int32ProbCtxts probCtxt, BitReader reader )
+	{
+		this.reader = reader;
+		this.probCtxt = probCtxt;
+	}
 
-    public int getTotalCount() {
-        int totalCount = 0;
+	public int getTotalCount()
+	{
+		int totalCount = 0;
 
-        for (Int32ProbCtxtEntry entrie : entries)
-            totalCount += entrie.getOccCount();
+		for ( Int32ProbCtxtEntry entrie : this.entries ) {
+			totalCount += entrie.getOccCount();
+		}
 
-        return totalCount;
-    }
+		return totalCount;
+	}
 
-    public void read(Boolean isFirstTable, int codecType) throws IOException {
+	public void read( Boolean isFirstTable, int codecType ) throws IOException
+	{
 
-        // Header of the table
-        long tableEntryCount = reader.readU32(32);
-        nbSymbolBits = reader.readU32(6);
-        nbOccCountBits = reader.readU32(6);
+		// Header of the table
+		long tableEntryCount = this.reader.readU32( 32 );
+		this.nbSymbolBits = this.reader.readU32( 6 );
+		this.nbOccCountBits = this.reader.readU32( 6 );
 
-        probCtxt.nbOccCountBits = nbOccCountBits;
+		this.probCtxt.nbOccCountBits = this.nbOccCountBits;
 
-        if (isFirstTable)
-            probCtxt.setNbValueBits(reader.readU32(6));
+		if ( isFirstTable ) {
+			this.probCtxt.setNbValueBits( this.reader.readU32( 6 ) );
+		}
 
-        nbNextContextBits = reader.readU32(6);
+		this.nbNextContextBits = this.reader.readU32( 6 );
 
-        if (isFirstTable)
-            probCtxt.setMinValue(reader.readU32(32));
+		if ( isFirstTable ) {
+			this.probCtxt.setMinValue( this.reader.readU32( 32 ) );
+		}
 
-        if (DebugInfo.debugCodec) {
-            System.out.println("Prob Context Table Entry Count: "
-                    + tableEntryCount);
-            System.out.println("Number symbol bits: " + nbSymbolBits);
-            System.out
-                    .println("Number occurence count bits: " + nbOccCountBits);
-            System.out.println("Number value bits: "
-                    + probCtxt.getNbValueBits());
-            System.out.println("Number context bits: " + nbNextContextBits);
-            System.out.println("Min value: " + probCtxt.getMinValue());
-        }
+		if ( DebugInfo.debugCodec ) {
+			BundleAccessor.getLogger().info( "Prob Context Table Entry Count: {}", tableEntryCount ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Number symbol bits: {}", this.nbSymbolBits ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Number occurence count bits: {}", this.nbOccCountBits ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Number value bits: {}", this.probCtxt.getNbValueBits() ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Number context bits: {}", this.nbNextContextBits ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( "Min value: {}", this.probCtxt.getMinValue() ); //$NON-NLS-1$
+		}
 
-        // Probability Context Table Entries
+		// Probability Context Table Entries
 
-        entries = new Int32ProbCtxtEntry[(int) tableEntryCount];
-        long cumCount = 0;
+		this.entries = new Int32ProbCtxtEntry[(int)tableEntryCount];
+		long cumCount = 0;
 
-        for (int i = 0; i < tableEntryCount; i++) {
+		for ( int i = 0; i < tableEntryCount; i++ ) {
 
-            long symbol = reader.readU32((int) nbSymbolBits) - 2;
-            long occCount = reader.readU32((int) nbOccCountBits);
-            long associatedValue = 0;
+			long symbol = this.reader.readU32( (int)this.nbSymbolBits ) - 2;
+			long occCount = this.reader.readU32( (int)this.nbOccCountBits );
+			long associatedValue = 0;
 
-            if (codecType == Int32Compression.HUFFMAN_CODEC)
-                associatedValue = reader.readU32((int) probCtxt
-                        .getNbValueBits());
-            else if (codecType == Int32Compression.ARITHMETIC_CODEC)
-            	// For the first table the associated value is read
-                if (isFirstTable) {
-                    associatedValue = reader.readU32((int) probCtxt
-                            .getNbValueBits()) + probCtxt.getMinValue();
-                    probCtxt.assValues.put(symbol, associatedValue);
-                // For the second table we take the associated value of the 
-                // symbol in the first table
-                } else {
-                	associatedValue = probCtxt.assValues.get(symbol);
-                }
+			if ( codecType == Int32Compression.HUFFMAN_CODEC ) {
+				associatedValue = this.reader.readU32( (int)this.probCtxt.getNbValueBits() );
+			}
+			else if ( codecType == Int32Compression.ARITHMETIC_CODEC ) {
+				// For the first table the associated value is read
+				if ( isFirstTable ) {
+					associatedValue = this.reader.readU32( (int)this.probCtxt.getNbValueBits() ) + this.probCtxt.getMinValue();
+					this.probCtxt.assValues.put( symbol, associatedValue );
+					// For the second table we take the associated value of the 
+					// symbol in the first table
+				}
+				else {
+					associatedValue = this.probCtxt.assValues.get( symbol );
+				}
+			}
+			int nextContext = (int)this.reader.readU32( (int)this.nbNextContextBits );
 
-            int nextContext = (int) reader.readU32((int) nbNextContextBits);
+			this.entries[i] = new Int32ProbCtxtEntry( symbol, occCount, cumCount, associatedValue, nextContext );
+			cumCount += occCount;
 
-            entries[i] = new Int32ProbCtxtEntry(symbol, occCount, cumCount,
-                    associatedValue, nextContext);
-            cumCount += occCount;
+			if ( DebugInfo.debugCodec ) {
+				BundleAccessor.getLogger().info( "{} => Symbol: {}, Occurence Count: {}, Cum Count : {}, Associated Value: {}, Next Context: {}", i, symbol, occCount, this.entries[i].getCumCount(), associatedValue, nextContext ); //$NON-NLS-1$
+			}
+		}
 
-            if (DebugInfo.debugCodec)
-                System.out
-                        .println(String
-                                .format("%d => Symbol: %d, Occurence Count: %d, Cum Count : %d, Associated Value: %d, Next Context: %d",
-                                        i, symbol, occCount,
-                                        entries[i].getCumCount(),
-                                        associatedValue, nextContext));
+	}
 
-        }
+	public long getNbValueBits()
+	{
+		return this.probCtxt.getNbValueBits();
+	}
 
-    }
+	public long getMinValue()
+	{
+		return this.probCtxt.getMinValue();
+	}
 
-    public long getNbValueBits() {
-        return probCtxt.getNbValueBits();
-    }
+	// Looks up the index of the context entry that falls just above
+	// the accumulated count.
+	public Int32ProbCtxtEntry lookupEntryByCumCount( long count )
+	{
+		long sum = this.entries[0].getOccCount();
+		int idx = 0;
 
-    public long getMinValue() {
-        return probCtxt.getMinValue();
-    }
+		while ( count >= sum ) {
+			idx += 1;
+			sum += this.entries[idx].getOccCount();
+		}
 
-    // Looks up the index of the context entry that falls just above
-    // the accumulated count.
-    public Int32ProbCtxtEntry lookupEntryByCumCount(long count) {
-        long sum = entries[0].getOccCount();
-        int idx = 0;
-
-        while (count >= sum) {
-            idx += 1;
-            sum += entries[idx].getOccCount();
-        }
-
-        return entries[idx];
-    }
+		return this.entries[idx];
+	}
 }

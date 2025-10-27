@@ -27,6 +27,8 @@
  ******************************************************************************/
 package uk.ac.liv.jt.segments;
 
+import uk.ac.liv.jt.internal.BundleAccessor;
+
 /**
  * WireFrame segment type. TODO: implement
  * 
@@ -38,8 +40,6 @@ public class WireFrameSegment extends JTSegment {
     @Override
     public void read() throws java.io.IOException {
         super.read();
-
-        System.err.println("Todo: implement " + getClass().getSimpleName());
-        // TODO: Implement actual method.
+		BundleAccessor.getLogger().info( "TODO, implement support for {}", getClass().getSimpleName() ); //$NON-NLS-1$
     }
 }

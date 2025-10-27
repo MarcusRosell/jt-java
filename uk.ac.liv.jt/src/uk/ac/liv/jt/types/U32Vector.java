@@ -26,6 +26,7 @@
  * 
  ******************************************************************************/
 package uk.ac.liv.jt.types;
+
 /**
  * Classes that wraps an int vector, used to represent a Unsigned int32 vector (unsigned int does not exist in Java); 
  * this class will only allow access using the get method that will perform the required conversion on demand and return a long. 
@@ -34,30 +35,35 @@ package uk.ac.liv.jt.types;
  * @author fabio
  *
  */
-public class U32Vector {
+public class U32Vector
+{
 
-    
-    private int[] content;
-    private long[] contentLong;
-    
-    public U32Vector(int[] data) {
-        content = data;
-    }
-    
-    public long get(int index) {
-        return content[index] & 0xFFFFFFFFL;
-    }
-    
-    public int length() { return content.length;}
-    
-    public long[] convertAllData () {
-        if (contentLong==null){
-            contentLong = new long[content.length];
-            for (int i=0;i< content.length;i++){
-                contentLong[i] = content[i] & 0xFFFFFFFFL;
-            }
-        }
-        return contentLong;
-    }
+	private int[] content;
+	private long[] contentLong;
+
+	public U32Vector( int[] data )
+	{
+		this.content = data;
+	}
+
+	public long get( int index )
+	{
+		return this.content[index] & 0xFFFFFFFFL;
+	}
+
+	public int length()
+	{
+		return this.content.length;
+	}
+
+	public long[] convertAllData()
+	{
+		if ( this.contentLong == null ) {
+			this.contentLong = new long[this.content.length];
+			for ( int i = 0; i < this.content.length; i++ ) {
+				this.contentLong[i] = this.content[i] & 0xFFFFFFFFL;
+			}
+		}
+		return this.contentLong;
+	}
 }
-

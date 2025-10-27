@@ -27,35 +27,39 @@
  ******************************************************************************/
 package uk.ac.liv.jt.codec;
 
-public class DeeringLookupEntry {
+public class DeeringLookupEntry
+{
+	double cosTheta;
+	double sinTheta;
+	double cosPsi;
+	double sinPsi;
 
-    double cosTheta;
-    double sinTheta;
-    double cosPsi;
-    double sinPsi;
+	public DeeringLookupEntry( double cosTheta, double sinTheta, double cosPsi, double sinPsi )
+	{
+		super();
+		this.cosTheta = cosTheta;
+		this.sinTheta = sinTheta;
+		this.cosPsi = cosPsi;
+		this.sinPsi = sinPsi;
+	}
 
-    public DeeringLookupEntry(double cosTheta, double sinTheta, double cosPsi,
-            double sinPsi) {
-        super();
-        this.cosTheta = cosTheta;
-        this.sinTheta = sinTheta;
-        this.cosPsi = cosPsi;
-        this.sinPsi = sinPsi;
-    }
+	public double getCosTheta()
+	{
+		return this.cosTheta;
+	}
 
-    public double getCosTheta() {
-        return cosTheta;
-    }
+	public double getSinTheta()
+	{
+		return this.sinTheta;
+	}
 
-    public double getSinTheta() {
-        return sinTheta;
-    }
+	public double getCosPsi()
+	{
+		return this.cosPsi;
+	}
 
-    public double getCosPsi() {
-        return cosPsi;
-    }
-
-    public double getSinPsi() {
-        return sinPsi;
-    }
+	public double getSinPsi()
+	{
+		return this.sinPsi;
+	}
 }

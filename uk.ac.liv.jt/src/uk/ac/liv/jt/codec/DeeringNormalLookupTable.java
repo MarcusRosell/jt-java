@@ -27,56 +27,56 @@
  ******************************************************************************/
 package uk.ac.liv.jt.codec;
 
-public class DeeringNormalLookupTable {
-	
+public class DeeringNormalLookupTable
+{
 	/* A table of sin/cos precomputed to optimize the calculation of normals
 	 */
 
-    long nBits;
-    double[] cosTheta;
-    double[] sinTheta;
-    double[] cosPsi;
-    double[] sinPsi;
+	long nBits;
+	double[] cosTheta;
+	double[] sinTheta;
+	double[] cosPsi;
+	double[] sinPsi;
 
-    public DeeringNormalLookupTable() {
-        super();
+	public DeeringNormalLookupTable()
+	{
+		super();
 
-        int numberbits = 8;
-        nBits = Math.min(numberbits, 31);
-        int tableSize = (1 << nBits);
-        cosTheta = new double[tableSize + 1];
-        sinTheta = new double[tableSize + 1];
-        cosPsi = new double[tableSize + 1];
-        sinPsi = new double[tableSize + 1];
+		int numberbits = 8;
+		this.nBits = Math.min( numberbits, 31 );
+		int tableSize = (1 << this.nBits);
+		this.cosTheta = new double[tableSize + 1];
+		this.sinTheta = new double[tableSize + 1];
+		this.cosPsi = new double[tableSize + 1];
+		this.sinPsi = new double[tableSize + 1];
 
-        double psiMax = 0.615479709;
+		double psiMax = 0.615479709;
 
-        double fTableSize = tableSize;
+		double fTableSize = tableSize;
 
-        for (int ii = 0; ii <= tableSize; ii++) {
-            double theta = Math.asin(Math.tan(psiMax * (tableSize - ii)
-                    / fTableSize));
-            double psi = psiMax * ((ii) / fTableSize);
-            cosTheta[ii] = Math.cos(theta);
-            sinTheta[ii] = Math.sin(theta);
-            cosPsi[ii] = Math.cos(psi);
-            sinPsi[ii] = Math.sin(psi);
-        }
-    }
+		for ( int ii = 0; ii <= tableSize; ii++ ) {
+			double theta = Math.asin( Math.tan( psiMax * (tableSize - ii) / fTableSize ) );
+			double psi = psiMax * ((ii) / fTableSize);
+			this.cosTheta[ii] = Math.cos( theta );
+			this.sinTheta[ii] = Math.sin( theta );
+			this.cosPsi[ii] = Math.cos( psi );
+			this.sinPsi[ii] = Math.sin( psi );
+		}
+	}
 
-    public long numBitsPerAngle() {
-        return nBits;
-    }
+	public long numBitsPerAngle()
+	{
+		return this.nBits;
+	}
 
-    public DeeringLookupEntry lookupThetaPsi(long theta, long psi,
-            long numberBits) {
-        long offset = nBits - numberBits;
+	public DeeringLookupEntry lookupThetaPsi( long theta, long psi,
+			long numberBits )
+	{
+		long offset = this.nBits - numberBits;
 
-        long offTheta = (theta << offset) & 0xFFFFFFFFL;
-        long offPsi = (psi << offset) & 0xFFFFFFFFL;
+		long offTheta = (theta << offset) & 0xFFFFFFFFL;
+		long offPsi = (psi << offset) & 0xFFFFFFFFL;
 
-        return new DeeringLookupEntry(cosTheta[(int) offTheta],
-                sinTheta[(int) offTheta], cosPsi[(int) offPsi],
-                sinPsi[(int) offPsi]);
-    }
+		return new DeeringLookupEntry( this.cosTheta[(int)offTheta], this.sinTheta[(int)offTheta], this.cosPsi[(int)offPsi], this.sinPsi[(int)offPsi] );
+	}
 }

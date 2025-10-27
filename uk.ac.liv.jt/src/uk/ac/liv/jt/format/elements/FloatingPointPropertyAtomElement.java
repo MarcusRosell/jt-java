@@ -29,29 +29,31 @@ package uk.ac.liv.jt.format.elements;
 
 import java.io.IOException;
 
-public class FloatingPointPropertyAtomElement extends BasePropertyAtomData {
+public class FloatingPointPropertyAtomElement extends BasePropertyAtomData
+{
+	public float value;
 
-    public float value;
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-    @Override
-    public void read() throws IOException {
-        super.read();
-
-        int versionNumber = -1;
-		if(getReader().MAJOR_VERSION >= 9){
-			reader.readBytes(2);
-			versionNumber = reader.readI16();
-			if(versionNumber != 1){
-				throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
+		int versionNumber = -1;
+		if ( getReader().MAJOR_VERSION >= 9 ) {
+			this.reader.readBytes( 2 );
+			versionNumber = this.reader.readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
 			}
 		}
 
-        value = reader.readF32();
-        ovalue = value;
-    }
+		this.value = this.reader.readF32();
+		this.ovalue = this.value;
+	}
 
-    @Override
-    public String toString() {
-        return "" + value;
-    }
+	@Override
+	public String toString()
+	{
+		return "" + this.value; //$NON-NLS-1$
+	}
 }

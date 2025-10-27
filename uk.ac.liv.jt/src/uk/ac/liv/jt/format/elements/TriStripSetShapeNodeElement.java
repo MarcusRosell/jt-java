@@ -57,16 +57,16 @@ public class TriStripSetShapeNodeElement extends VertexShapeNodeElement
 	public GUID getLODSegmentId() throws IOException
 	{
 		LateLoadedPropertyAtomElement l = null;
-		for ( BasePropertyAtomData p[] : properties )
-			if ( p[1] instanceof LateLoadedPropertyAtomElement
-					&& p[0] instanceof StringPropertyAtomElement ) {
-				StringPropertyAtomElement s = (StringPropertyAtomElement)p[0];
-				if ( s.value.equals( "JT_LLPROP_SHAPEIMPL" ) )
-					l = (LateLoadedPropertyAtomElement)p[1];
+		for ( BasePropertyAtomData p[] : this.properties ) {
+			if ( p[1] instanceof LateLoadedPropertyAtomElement llpae && p[0] instanceof StringPropertyAtomElement s ) {
+				if ( s.value.equals( "JT_LLPROP_SHAPEIMPL" ) ) { //$NON-NLS-1$
+					l = llpae;
+				}
 			}
-
-		if ( l == null )
-			throw new IOException( "Missing LOD segment reference" );
+		}
+		if ( l == null ) {
+			throw new IOException( "Missing LOD segment reference" ); //$NON-NLS-1$
+		}
 		return l.segmentId;
 
 	}

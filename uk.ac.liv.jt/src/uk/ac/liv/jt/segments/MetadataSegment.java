@@ -28,10 +28,12 @@
 package uk.ac.liv.jt.segments;
 
 import uk.ac.liv.jt.format.JTElement;
+import uk.ac.liv.jt.internal.BundleAccessor;
+
 /**
  * 
  * Meta data segment. Used to represent segment types 
- * PMI meta data segment and Meta data segment, as descrbed:
+ * PMI meta data segment and Meta data segment, as described:
  * 
  * 7.2.7 PMI Data Segment The PMI Manager Meta Data Element (as
  * documented in 7.2.6.2 PMI Manager Meta Data Element) can sometimes
@@ -43,29 +45,29 @@ import uk.ac.liv.jt.format.JTElement;
  * @author fabio
  *
  */
-public class MetadataSegment extends JTSegment {
+public class MetadataSegment extends JTSegment
+{
 
-    @Override
-    public void read() throws java.io.IOException {
-        super.read();
-        // System.out.println("=> Metadata Segment");
-        //
-        // System.out.println(" - Header");
-        // System.out.println("    Id:" + this.id);
-        // System.out.println("    Type:" + this.segType);
-        // System.out.println("    Length:" + this.length);
+	@Override
+	public void read() throws java.io.IOException
+	{
+		super.read();
+		BundleAccessor.getLogger().trace( "=> Metadata Segment" ); //$NON-NLS-1$
+		BundleAccessor.getLogger().trace( " - Header" ); //$NON-NLS-1$
+		BundleAccessor.getLogger().trace( "    Id: {}", this.id ); //$NON-NLS-1$
+		BundleAccessor.getLogger().trace( "    Type: {}", this.segType ); //$NON-NLS-1$
+		BundleAccessor.getLogger().trace( "    Length: {}", this.length ); //$NON-NLS-1$
 
-        JTElement element = JTElement.createJTElement(reader);
+		JTElement element = JTElement.createJTElement( this.reader );
 
-        // System.out.println(" - Metadata Elements");
-        //
-        // System.out.println("     Element length: " + element.getLength());
-        // System.out.println("     Object Type Id: " + element.getId());
-        // System.out.println("     Object Base Type: "
-        // + element.getObjectBaseType());
+		BundleAccessor.getLogger().trace( " - Metadata Elements" ); //$NON-NLS-1$
+		//
+		BundleAccessor.getLogger().trace( "     Element length: {}", element.getLength() ); //$NON-NLS-1$
+		BundleAccessor.getLogger().trace( "     Object Type Id: {}", element.getId() ); //$NON-NLS-1$
+		BundleAccessor.getLogger().trace( "     Object Base Type: {}", element.getObjectBaseType() ); //$NON-NLS-1$
 
-        element.read();
+		element.read();
 
-    }
+	}
 
 }

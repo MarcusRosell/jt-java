@@ -42,13 +42,13 @@ public class VertexShapeNodeElement extends BaseShapeNodeElement {
     public void read() throws IOException {
         super.read();
 
-        normalBinding = reader.readI32();
-        textureBinding = reader.readI32();
-        colorBinding = reader.readI32();
+		this.normalBinding = this.reader.readI32();
+		this.textureBinding = this.reader.readI32();
+		this.colorBinding = this.reader.readI32();
 
-        quantParam = new JTQuantizationParam(reader);
+		this.quantParam = new JTQuantizationParam( this.reader );
 
-        quantParam.read();
+		this.quantParam.read();
     }
 
 }

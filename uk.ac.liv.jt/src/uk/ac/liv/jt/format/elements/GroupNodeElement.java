@@ -28,38 +28,40 @@
 package uk.ac.liv.jt.format.elements;
 
 import java.io.IOException;
+
 /** 
  * 
  * Nodes of this types can have Children so are proper graph nodes
  * @author fabio
  *
  */
-public class GroupNodeElement extends BaseNodeElement {
+public class GroupNodeElement extends BaseNodeElement
+{
+	/** contain reference to the node's children, than can be of any NODE type */
 
-    /** contain reference to the node's children, than can be of any NODE type */
+	public int[] childNodeObjectId;
 
-    public int[] childNodeObjectId;
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-    @Override
-    public void read() throws IOException {
-        super.read();
+		short versionNumber = -1;
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			versionNumber = getReader().readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
+			}
+		}
 
-        short versionNumber = -1;
-        if(reader.MAJOR_VERSION >= 9){
-                        versionNumber = getReader().readI16();
-                        if(versionNumber != 1){
-                                throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
-                        }
-                }
+		int childCount = this.reader.readI32();
+		this.childNodeObjectId = new int[childCount];
 
-        int childCount = reader.readI32();
-        childNodeObjectId = new int[childCount];
+		// System.out.print("Child IDs: ");
 
-        // System.out.print("Child IDs: ");
-
-        for (int i = 0; i < childCount; i++)
-            childNodeObjectId[i] = reader.readI32();
-        // System.out.print(childNodeObjectId[i]+ " ");
-    }
-
+		for ( int i = 0; i < childCount; i++ ) {
+			this.childNodeObjectId[i] = this.reader.readI32();
+		}
+		// System.out.print(childNodeObjectId[i]+ " ");
+	}
 }

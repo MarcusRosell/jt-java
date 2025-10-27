@@ -35,9 +35,9 @@ package uk.ac.liv.jt.types;
 
 public class CoordF32 {
 
-    public float x;
-    public float y;
-    public float z;
+	private float x;
+	private float y;
+	private float z;
 
     public CoordF32(float x, float y, float z) {
         super();
@@ -48,12 +48,12 @@ public class CoordF32 {
 
     @Override
     public String toString() {
-        return "(X: " + x + " Y: " + y + " Z: " + z + ")";
+		return "(X: " + this.x + " Y: " + this.y + " Z: " + this.z + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
     
     public double[] getVectorDouble(){
 
-        return  new double[] {x,y,z,};
+		return new double[] { this.x, this.y, this.z, };
     }
 
 }

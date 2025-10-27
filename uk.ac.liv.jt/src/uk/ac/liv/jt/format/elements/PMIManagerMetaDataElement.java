@@ -30,24 +30,25 @@ package uk.ac.liv.jt.format.elements;
 import java.io.IOException;
 
 import uk.ac.liv.jt.format.JTElement;
+import uk.ac.liv.jt.internal.BundleAccessor;
 
-public class PMIManagerMetaDataElement extends JTElement {
+public class PMIManagerMetaDataElement extends JTElement
+{
+	long nodeFlags;
+	int[] attObjectId;
+	int versionNumber;
+	int reservedField;
+	int associationCount;
+	int stringCount;
+	int userAttributeCount;
+	int modelViewCount;
+	int genericEntityCount;
+	int cadTagFlag;
+	int cadTagIndexCount;
+	ModelView[] views;
+	private String[] stringTable;
+	private GenericEntry[] genericEntries;
 
-    long nodeFlags;
-    int[] attObjectId;
-    int versionNumber;
-    int reservedField;
-    int associationCount;
-    int stringCount;
-    int userAttributeCount;
-     int modelViewCount;
-     int genericEntityCount;
-     int cadTagFlag;
-     int cadTagIndexCount;
-     ModelView[] views;
-    private String[] stringTable;
-    private GenericEntry[] genericEntries;
-    
 //     @Override
 //     public void read() throws IOException {
 //    
@@ -77,112 +78,113 @@ public class PMIManagerMetaDataElement extends JTElement {
 //     }
 //     }
 
-    private GenericEntry[] readGenericEntries() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	private GenericEntry[] readGenericEntries()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    private ModelView[] readModelViews(int modelViewCount2) throws IOException {
-        ModelView[] ret= new ModelView[modelViewCount2];
-        for (int i = 0; i < modelViewCount2;i++){
-            ModelView c = ret[i] =new ModelView();
-            c.eye_direction = reader.readCoordF32();
-            c.angle = reader.readF32();
-            c.eye_pos = reader.readCoordF32();
-            c.target_point = reader.readCoordF32();
-            c.view_angle = reader.readCoordF32();
-            c.viewport_diameter = reader.readF32();
-            c.reserved1 = reader.readF32();
-            c.reserved2 = reader.readI32();
-            c.active_flag = reader.readI32();
-            
-            c.view_id = reader.readI32();
-            c.view_name_string_id = reader.readI32();
-            
-        }
-        return ret;
-    }
+	private ModelView[] readModelViews( int modelViewCount2 ) throws IOException
+	{
+		ModelView[] ret = new ModelView[modelViewCount2];
+		for ( int i = 0; i < modelViewCount2; i++ ) {
+			ModelView c = ret[i] = new ModelView();
+			c.eye_direction = this.reader.readCoordF32();
+			c.angle = this.reader.readF32();
+			c.eye_pos = this.reader.readCoordF32();
+			c.target_point = this.reader.readCoordF32();
+			c.view_angle = this.reader.readCoordF32();
+			c.viewport_diameter = this.reader.readF32();
+			c.reserved1 = this.reader.readF32();
+			c.reserved2 = this.reader.readI32();
+			c.active_flag = this.reader.readI32();
 
-    public void readPMIEntities() throws IOException {
-        // PMI Dimension Entities
-        System.out.println("     PMI Dimension Entities");
+			c.view_id = this.reader.readI32();
+			c.view_name_string_id = this.reader.readI32();
+		}
+		return ret;
+	}
 
-        int dimensionCount = getReader().readI32();
-        System.out.println("       Dimension count: " + dimensionCount);
+	public void readPMIEntities() throws IOException
+	{
+		// PMI Dimension Entities
+		BundleAccessor.getLogger().info( "     PMI Dimension Entities" ); //$NON-NLS-1$
 
-        // PMI Note Entities
-        System.out.println("     PMI Note Entities");
+		int dimensionCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Dimension count: {}" + dimensionCount ); //$NON-NLS-1$
 
-        int noteCount = getReader().readI32();
-        System.out.println("       Note count: " + noteCount);
+		// PMI Note Entities
+		BundleAccessor.getLogger().info( "     PMI Note Entities" ); //$NON-NLS-1$
 
-        // PMI Datum Feature Symbol Entities
-        System.out.println("     PMI Datum Feature Symbol Entities");
+		int noteCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Note count: {}", noteCount ); //$NON-NLS-1$
 
-        int dfsCount = getReader().readI32();
-        System.out.println("       DFS count: " + dfsCount);
+		// PMI Datum Feature Symbol Entities
+		BundleAccessor.getLogger().info( "     PMI Datum Feature Symbol Entities" ); //$NON-NLS-1$
 
-        // PMI Datum Target Entities
-        System.out.println("     PMI Datum Target Entities");
+		int dfsCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       DFS count: {}", dfsCount ); //$NON-NLS-1$
 
-        int datumTargetCount = getReader().readI32();
-        System.out.println("       Datum Target count: " + datumTargetCount);
+		// PMI Datum Target Entities
+		BundleAccessor.getLogger().info( "     PMI Datum Target Entities" ); //$NON-NLS-1$
 
-        // PMI Feature Control Frame Entities
-        System.out.println("     PMI Feature Control Frame Entities");
+		int datumTargetCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Datum Target count: {}", datumTargetCount ); //$NON-NLS-1$
 
-        int fcfCount = getReader().readI32();
-        System.out.println("       FCF count: " + fcfCount);
+		// PMI Feature Control Frame Entities
+		BundleAccessor.getLogger().info( "     PMI Feature Control Frame Entities" ); //$NON-NLS-1$
 
-        // PMI Line Weld Entities
-        System.out.println("     PMI Line Weld Entities");
+		int fcfCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       FCF count: {}", fcfCount ); //$NON-NLS-1$
 
-        int lineWeldCount = getReader().readI32();
-        System.out.println("       Line Weld count: " + lineWeldCount);
+		// PMI Line Weld Entities
+		BundleAccessor.getLogger().info( "     PMI Line Weld Entities" ); //$NON-NLS-1$
 
-        // PMI Spot Weld Entities
-        System.out.println("     PMI Spot Weld Entities");
+		int lineWeldCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Line Weld count: {}", lineWeldCount ); //$NON-NLS-1$
 
-        int spotWeldCount = getReader().readI32();
-        System.out.println("       Spot Weld count: " + spotWeldCount);
+		// PMI Spot Weld Entities
+		BundleAccessor.getLogger().info( "     PMI Spot Weld Entities" ); //$NON-NLS-1$
 
-        // PMI Surface Finish Entities
-        System.out.println("     PMI Surface Finish Entities");
+		int spotWeldCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Spot Weld count: {}", spotWeldCount ); //$NON-NLS-1$
 
-        int sfCount = getReader().readI32();
-        System.out.println("       SF count: " + sfCount);
+		// PMI Surface Finish Entities
+		BundleAccessor.getLogger().info( "     PMI Surface Finish Entities" ); //$NON-NLS-1$
 
-        // PMI Measurement Point Entities
-        System.out.println("     PMI Measurement Point Entities");
+		int sfCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       SF count: {}", sfCount ); //$NON-NLS-1$
 
-        int mpCount = getReader().readI32();
-        System.out.println("       MP count: " + mpCount);
+		// PMI Measurement Point Entities
+		BundleAccessor.getLogger().info( "     PMI Measurement Point Entities" ); //$NON-NLS-1$
 
-        // PMI Locator Entities
-        System.out.println("     PMI Locator Entities");
+		int mpCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       MP count: {}", mpCount ); //$NON-NLS-1$
 
-        int locatorCount = getReader().readI32();
-        System.out.println("       Locator count: " + locatorCount);
+		// PMI Locator Entities
+		BundleAccessor.getLogger().info( "     PMI Locator Entities" ); //$NON-NLS-1$
 
-        // PMI Reference Geometry Entities
-        System.out.println("     PMI Reference Geometry Entities");
+		int locatorCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Locator count: {}", locatorCount ); //$NON-NLS-1$
 
-        int referenceGeometryCount = getReader().readI32();
-        System.out.println("       Reference Geometry count: "
-                + referenceGeometryCount);
+		// PMI Reference Geometry Entities
+		BundleAccessor.getLogger().info( "     PMI Reference Geometry Entities" ); //$NON-NLS-1$
 
-        // PMI Design Group Entities
-        System.out.println("     PMI Design Group Entities");
+		int referenceGeometryCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Reference Geometry count: {}", referenceGeometryCount ); //$NON-NLS-1$
 
-        int designGroupCount = getReader().readI32();
-        System.out.println("       Design Group Count: " + designGroupCount);
+		// PMI Design Group Entities
+		BundleAccessor.getLogger().info( "     PMI Design Group Entities" ); //$NON-NLS-1$
 
-        // PMI Coordinate System Entities
-        System.out.println("     PMI Coordinate System Entities");
+		int designGroupCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Design Group Count: {}", designGroupCount ); //$NON-NLS-1$
 
-        int coordSysCount = getReader().readI32();
-        System.out.println("       Coord Sys count: " + coordSysCount);
+		// PMI Coordinate System Entities
+		BundleAccessor.getLogger().info( "     PMI Coordinate System Entities" ); //$NON-NLS-1$
 
-    }
+		int coordSysCount = getReader().readI32();
+		BundleAccessor.getLogger().info( "       Coord Sys count: {}", coordSysCount ); //$NON-NLS-1$
+
+	}
 
 }

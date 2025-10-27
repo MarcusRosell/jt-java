@@ -31,6 +31,7 @@ import java.io.IOException;
 
 import uk.ac.liv.jt.debug.DebugInfo;
 import uk.ac.liv.jt.format.JTElement;
+import uk.ac.liv.jt.internal.BundleAccessor;
 /** 
  * Shape LOD Segment contains an Element that defines the geometric shape 
  * definition data (e.g. vertices, polygons, normals, etc) for a particular 
@@ -51,29 +52,27 @@ public class LODSegment extends JTSegment {
         super.read();
 
         if (DebugInfo.debugMode) {
-            System.out.println("- Header");
-            System.out.println("  Id:" + id);
-            System.out.println("  Type:" + segType);
-            System.out.println("  Length:" + length);
-            System.out.println();
 
-            System.out.println("**** Shape LOD Element ****");
-            System.out.println();
+			BundleAccessor.getLogger().debug( "- Header" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "  Id: {}", this.id ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "  Type: {}", this.segType ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "  Length: {}", this.length ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "" ); //$NON-NLS-1$
+
+			BundleAccessor.getLogger().debug( "**** Shape LOD Element ****" ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "" ); //$NON-NLS-1$
         }
 
-        JTElement element = JTElement.createJTElement(reader);
+		JTElement element = JTElement.createJTElement( this.reader );
 
         if (DebugInfo.debugMode) {
-            System.out.println("Element length: " + element.getLength());
-            System.out.println("Object Type Id: " + element.getId());
-            System.out.println("Object Base Type: "
-                    + element.getObjectBaseType());
+			BundleAccessor.getLogger().debug( "Element length: {}", element.getLength() ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "Object Type Id: {}", element.getId() ); //$NON-NLS-1$
+			BundleAccessor.getLogger().debug( "Object Base Type: {}", element.getObjectBaseType() ); //$NON-NLS-1$
         }
 
         /* Shape LOD Element p. 118 */        
         element.read();
-        e = element;
-
+		this.e = element;
     }
-
 }

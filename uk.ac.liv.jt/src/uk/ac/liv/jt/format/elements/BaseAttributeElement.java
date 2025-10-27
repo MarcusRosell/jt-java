@@ -35,28 +35,30 @@ import java.io.IOException;
  * @author fabio
  *
  */
-public class BaseAttributeElement extends JTNode {
+public class BaseAttributeElement extends JTNode
+{
 
-    public long fieldInhibitFlags;
-    public int stateFlags;
+	public long fieldInhibitFlags;
+	public int stateFlags;
 
-    @Override
-    public void read() throws IOException {
-        super.read();
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-        short versionNumber = -1;
-                if(reader.MAJOR_VERSION >= 9){
-                        versionNumber = reader.readI16();
-                        if(versionNumber != 1){
-                                throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
-                        }
-                        reader.readBytes(2);    // Skip 2 unknown bytes
-                }
+		short versionNumber = -1;
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			versionNumber = this.reader.readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
+			}
+			this.reader.readBytes( 2 );    // Skip 2 unknown bytes
+		}
 
-        stateFlags = reader.readU8();
-        fieldInhibitFlags = reader.readU32();
-        // System.out.println("Attribute ID: " + getObjectID());
+		this.stateFlags = this.reader.readU8();
+		this.fieldInhibitFlags = this.reader.readU32();
+		// System.out.println("Attribute ID: " + getObjectID());
 
-    }
+	}
 
 }

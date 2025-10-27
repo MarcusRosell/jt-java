@@ -35,8 +35,8 @@ package uk.ac.liv.jt.types;
  */
 public class BBoxF32 {
 
-    public CoordF32 minCorner;
-    public CoordF32 maxCorner;
+	private CoordF32 minCorner;
+	private CoordF32 maxCorner;
 
     public BBoxF32(CoordF32 minCorner, CoordF32 maxCorner) {
         super();
@@ -46,7 +46,17 @@ public class BBoxF32 {
 
     @Override
     public String toString() {
-        return "Min: " + minCorner + " - Max: " + maxCorner;
+		return "Min: " + this.getMinCorner() + " - Max: " + this.getMaxCorner(); //$NON-NLS-1$ //$NON-NLS-2$
     }
+
+	public CoordF32 getMaxCorner()
+	{
+		return this.maxCorner;
+	}
+
+	public CoordF32 getMinCorner()
+	{
+		return this.minCorner;
+	}
 
 }

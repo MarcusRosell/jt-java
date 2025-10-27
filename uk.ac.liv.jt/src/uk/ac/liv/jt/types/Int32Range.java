@@ -33,14 +33,15 @@ package uk.ac.liv.jt.types;
  *
  */
 
-public class Int32Range {
+public class Int32Range
+{
+	public int min;
+	public int max;
 
-    public int min;
-    public int max;
-
-    @Override
-    public String toString() {
-        return "Range [ " + min + " , " + max + " ]";
-    }
+	@Override
+	public String toString()
+	{
+		return "Range [ " + this.min + " , " + this.max + " ]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	}
 
 }

@@ -27,35 +27,48 @@
  ******************************************************************************/
 package uk.ac.liv.jt.format;
 
-public enum JTProperty {
+public enum JTProperty
+{
+	unit( "JT_PROP_MEASUREMENT_UNITS" ), //$NON-NLS-1$
+	name( "JT_PROP_NAME" ), //$NON-NLS-1$
+	partition( "PartitionType" ), //$NON-NLS-1$
+	tristrip_layout( "JT_PROP_TRISTRIP_DATA_LAYOUT" ), //$NON-NLS-1$
+	simp_params( "JT_PROP_SIMP_PARAMS" ), //$NON-NLS-1$
+	simp_name( "JT_PROP_SIMP_NAME" ), //$NON-NLS-1$
+	shape_type( "JT_PROP_SHAPE_DATA_TYPE" ), //$NON-NLS-1$
+	shape_lloaded_reference( "JT_LLPROP_SHAPEIMPL" ), //$NON-NLS-1$
+	shape_lloaded_pmi( "JT_LLPROP_PMI" ), //$NON-NLS-1$
+	shape_lloaded_metadata( "JT_LLPROP_METADATA" ), //$NON-NLS-1$
+	BSphereCoverageFractionMax( "BSphereCoverageFractionMax" ), //$NON-NLS-1$
+	EXTERNAL_REF( "__EXTERNAL_REF" ), //$NON-NLS-1$
+	nTrisLODs( "_nTrisLODs" ), //$NON-NLS-1$
+	Angular( "Angular" ), //$NON-NLS-1$
+	Chordal( "Chordal" ), //$NON-NLS-1$
 
-    unit("JT_PROP_MEASUREMENT_UNITS"), name("JT_PROP_NAME"), partition(
-            "PartitionType"), tristrip_layout("JT_PROP_TRISTRIP_DATA_LAYOUT"), simp_params(
-            "JT_PROP_SIMP_PARAMS"), simp_name("JT_PROP_SIMP_NAME"), shape_type(
-            "JT_PROP_SHAPE_DATA_TYPE"), shape_lloaded_reference(
-            "JT_LLPROP_SHAPEIMPL"), shape_lloaded_pmi("JT_LLPROP_PMI"), shape_lloaded_metadata(
-            "JT_LLPROP_METADATA"), BSphereCoverageFractionMax(
-            "BSphereCoverageFractionMax"), EXTERNAL_REF("__EXTERNAL_REF"), nTrisLODs(
-            "_nTrisLODs"), Angular("Angular"), Chordal("Chordal"),
+	SEOccurrenceDisplayAsReference( "SEOccurrenceDisplayAsReference::" ), //$NON-NLS-1$
+	SEOccurrenceExcludeFromBOM( "SEOccurrenceExcludeFromBOM:" ), //$NON-NLS-1$
+	SEOccurrenceExcludeFromInterference( "SEOccurrenceExcludeFromInterference::" ), //$NON-NLS-1$
+	SEOccurrenceExcludeFromPhysicalProps( "SEOccurrenceExcludeFromPhysicalProps::" ), //$NON-NLS-1$
+	SEOccurrenceHideInDrawing( "SEOccurrenceHideInDrawing:" ), //$NON-NLS-1$
+	SEOccurrenceHideInSubAssembly( "SEOccurrenceHideInSubAssembly::" ), //$NON-NLS-1$
+	SEOccurrenceID( "SEOccurrenceID::" ), //$NON-NLS-1$
+	SEOccurrenceName( "SEOccurrenceName:" ), //$NON-NLS-1$
+	SEOccurrenceQuantity( "SEOccurrenceQuantity::" ), //$NON-NLS-1$
+	TOOLKIT_CUSTOMER( "TOOLKIT_CUSTOMER" ), //$NON-NLS-1$
+	Translation_Date( "Translation Date::" ), //$NON-NLS-1$
+	Translation_Version( "Translator Version::" ), //$NON-NLS-1$
 
-    SEOccurrenceDisplayAsReference("SEOccurrenceDisplayAsReference::"), SEOccurrenceExcludeFromBOM(
-            "SEOccurrenceExcludeFromBOM:"), SEOccurrenceExcludeFromInterference(
-            "SEOccurrenceExcludeFromInterference::"), SEOccurrenceExcludeFromPhysicalProps(
-            "SEOccurrenceExcludeFromPhysicalProps::"), SEOccurrenceHideInDrawing(
-            "SEOccurrenceHideInDrawing:"), SEOccurrenceHideInSubAssembly(
-            "SEOccurrenceHideInSubAssembly::"), SEOccurrenceID(
-            "SEOccurrenceID::"), SEOccurrenceName("SEOccurrenceName:"), SEOccurrenceQuantity(
-            "SEOccurrenceQuantity::"), TOOLKIT_CUSTOMER("TOOLKIT_CUSTOMER"), Translation_Date(
-            "Translation Date::"), Translation_Version("Translator Version::"),
+	AdvCompressLevel( "AdvCompressLevel::" ), //$NON-NLS-1$
+	AdvCompressLODLevel( "AdvCompressLODLevel::" ), //$NON-NLS-1$
+	Angular2( "Angular::" ), //$NON-NLS-1$
+	CAD_Source( "CAD Source::" ), //$NON-NLS-1$
+	Chordal2( "Chordal::" ), //$NON-NLS-1$
+	Name( "Name::" ); //$NON-NLS-1$
 
-    AdvCompressLevel("AdvCompressLevel::"), AdvCompressLODLevel(
-            "AdvCompressLODLevel::"), Angular2("Angular::"), CAD_Source(
-            "CAD Source::"), Chordal2("Chordal::"), Name("Name::");
+	private String key;
 
-    private String key;
-
-    private JTProperty(String key) {
-        this.key = key;
-    }
-
+	private JTProperty( String key )
+	{
+		this.key = key;
+	}
 }

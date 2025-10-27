@@ -27,6 +27,8 @@
  ******************************************************************************/
 package uk.ac.liv.jt.segments;
 
+import uk.ac.liv.jt.internal.BundleAccessor;
+
 /**
  * Shape segment type. TODO: implement
  * 
@@ -47,9 +49,8 @@ public class ShapeSegment extends JTSegment {
 //            
 //        }
 //        else 
-            
-            System.err.println("Unsupported element: " + this.getClass());
 
+		BundleAccessor.getLogger().info( "TODO, implement support for {}", getClass().getSimpleName() ); //$NON-NLS-1$
     }
 
 }

@@ -33,70 +33,82 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-public class HuffCodecContext {
-	
+public class HuffCodecContext
+{
 	/* Used to assign codes to the nodes of the Huffman tree */
 
-    int length; // Used to tally up total encoded code length
-    long code; // Code under construction
-    int codeLength; // Length of Huffman code currently under construction.
-    Hashtable<String, HuffCodeData> codes;
+	int length; // Used to tally up total encoded code length
+	long code; // Code under construction
+	int codeLength; // Length of Huffman code currently under construction.
+	Hashtable<String, HuffCodeData> codes;
 
-    public HuffCodecContext() {
-        super();
-        codes = new Hashtable<String, HuffCodeData>();
-    }
+	public HuffCodecContext()
+	{
+		super();
+		this.codes = new Hashtable<String, HuffCodeData>();
+	}
 
-    public void leftShift() {
-        code = code << 1;
-    }
+	public void leftShift()
+	{
+		this.code = this.code << 1;
+	}
 
-    public void rightShift() {
-        code = code >>> 1;
-    }
+	public void rightShift()
+	{
+		this.code = this.code >>> 1;
+	}
 
-    public void bitOr(int value) {
-        code = code | value;
-    }
+	public void bitOr( int value )
+	{
+		this.code = this.code | value;
+	}
 
-    public void incLength() {
-        codeLength++;
-    }
+	public void incLength()
+	{
+		this.codeLength++;
+	}
 
-    public void decLength() {
-        codeLength--;
-    }
+	public void decLength()
+	{
+		this.codeLength--;
+	}
 
-    public long getCode() {
-        return code;
-    }
+	public long getCode()
+	{
+		return this.code;
+	}
 
-    public int getCodeLen() {
-        return codeLength;
-    }
+	public int getCodeLen()
+	{
+		return this.codeLength;
+	}
 
-    public void add(HuffCodeData data) {
-        codes.put(data.codeToString(), data);
-    }
-    
-    public void makeCanonical (){ 
-        //long code = 0;
-        LinkedList <HuffCodeData>e = new LinkedList<HuffCodeData>(codes.values());
-        Collections.sort(e, new Comparator<HuffCodeData>() {
-	        @Override
-			public int compare(HuffCodeData o1, HuffCodeData o2) {
-	            int ret = (o2.codeLen - o1.codeLen);
-	            if (ret == 0)
-	                 ret = (int)(o2.bitCode - o1.bitCode);
-	           return ret;
-	        }
-        });
-        code = e.get(0).bitCode;
-        //int length = e.get(0).codeLen;
-        for (int i=0;i<e.size();i++){
-            HuffCodeData d1 = e.get(i);
+	public void add( HuffCodeData data )
+	{
+		this.codes.put( data.codeToString(), data );
+	}
 
-        
+	public void makeCanonical()
+	{
+		//long code = 0;
+		LinkedList<HuffCodeData> e = new LinkedList<>( this.codes.values() );
+		Collections.sort( e, new Comparator<HuffCodeData>() {
+			@Override
+			public int compare( HuffCodeData o1, HuffCodeData o2 )
+			{
+				int ret = (o2.codeLen - o1.codeLen);
+				if ( ret == 0 )
+					ret = (int)(o2.bitCode - o1.bitCode);
+				return ret;
+			}
+		} );
+
+		this.code = e.get( 0 ).bitCode;
+		//int length = e.get(0).codeLen;
+
+		for ( int i = 0; i < e.size(); i++ ) {
+			HuffCodeData d1 = e.get( i );
+
 //            String tmp = Long.toBinaryString(code);
 //            if (tmp.length() != d.codeLen) {
 //                long nb_0 = d.codeLen - tmp.length();
@@ -105,38 +117,38 @@ public class HuffCodecContext {
 //            }
 //            System.out.println(tmp);
 
-          //  int nextCL = (e.get(i+1<e.size()?i+1:i).codeLen);
-            //code = (code  - 1 ) >> (nextCL  - ((int)d1.codeLen));
-            if (i <e.size() -1 ) {
-                HuffCodeData d2 = e.get(i+1);
-                if (d1.index < d2.index && (Math.abs(d1.assValue) == Math.abs(d2.assValue))&& Math.abs(d2.assValue) == 2) {
-                    int t;
-                    t = d1.assValue;
-                    d1.assValue = d2.assValue;
-                    d2.assValue = t;
-                    t = d1.symbol;
-                    d1.symbol = d2.symbol;
-                    d2.symbol = t;
-                    t = d1.index;
-                    d1.index = d2.index;
-                    d2.index = t;
-                    
-              //      System.out.println("swap");
-                }
-            }
-            //System.out.println(d1);
-        }
-        
+			//  int nextCL = (e.get(i+1<e.size()?i+1:i).codeLen);
+			//code = (code  - 1 ) >> (nextCL  - ((int)d1.codeLen));
 
-            
+			if ( i < e.size() - 1 ) {
+				HuffCodeData d2 = e.get( i + 1 );
+				if ( d1.index < d2.index && (Math.abs( d1.assValue ) == Math.abs( d2.assValue )) && Math.abs( d2.assValue ) == 2 ) {
+					int t;
+					t = d1.assValue;
+					d1.assValue = d2.assValue;
+					d2.assValue = t;
+					t = d1.symbol;
+					d1.symbol = d2.symbol;
+					d2.symbol = t;
+					t = d1.index;
+					d1.index = d2.index;
+					d2.index = t;
 
-    }
+					//      System.out.println("swap");
+				}
+			}
+			//System.out.println(d1);
+		}
 
-    public void printCodes() {
-        Enumeration<HuffCodeData> e = codes.elements();
+	}
 
-        while (e.hasMoreElements())
-            System.out.println(e.nextElement());
-    }
+	public void printCodes()
+	{
+		Enumeration<HuffCodeData> e = this.codes.elements();
+
+		while ( e.hasMoreElements() ) {
+			System.out.println( e.nextElement() );
+		}
+	}
 
 }

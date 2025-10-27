@@ -27,19 +27,20 @@
  ******************************************************************************/
 package uk.ac.liv.jt.codec;
 
-public class DeeringCode {
+public class DeeringCode
+{
+	long sextant;
+	long octant;
+	long theta;
+	long psi;
 
-    long sextant;
-    long octant;
-    long theta;
-    long psi;
-
-    public DeeringCode(long sextant, long octant, long theta, long psi) {
-        super();
-        this.sextant = sextant;
-        this.octant = octant;
-        this.theta = theta;
-        this.psi = psi;
-    }
+	public DeeringCode( long sextant, long octant, long theta, long psi )
+	{
+		super();
+		this.sextant = sextant;
+		this.octant = octant;
+		this.theta = theta;
+		this.psi = psi;
+	}
 
 }

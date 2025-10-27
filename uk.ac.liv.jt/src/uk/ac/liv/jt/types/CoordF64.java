@@ -48,7 +48,7 @@ public class CoordF64 {
 
     @Override
     public String toString() {
-        return "(X: " + x + " Y: " + y + " Z: " + z + ")";
+		return "(X: " + this.x + " Y: " + this.y + " Z: " + this.z + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
 
 }

@@ -29,20 +29,18 @@ package uk.ac.liv.jt.format.elements;
 
 import java.io.IOException;
 
+public class PartNodeElement extends MetaDataNodeElement
+{
+	private int reserved;
+	private short versionNumber;
 
-public class PartNodeElement extends MetaDataNodeElement {
+	@Override
+	public void read() throws IOException
+	{
 
+		super.read();
 
-    private int reserved;
-    private short versionNumber;
-
-    @Override
-    public void read() throws IOException {
-
-        super.read();
-
-        versionNumber = reader.readI16();
-        reserved = reader.readI32();
-    }
-
+		this.versionNumber = this.reader.readI16();
+		this.reserved = this.reader.readI32();
+	}
 }

@@ -29,104 +29,106 @@ package uk.ac.liv.jt.codec;
 
 import uk.ac.liv.jt.types.Vec3D;
 
-public class DeeringNormalCodec {
-	
+public class DeeringNormalCodec
+{
 	/* The deering codec, transform the sextant, octant, theta, and psi values
 	 * to a 3D Vector (the normal)
 	 */
 
-    long numBits;
+	long numBits;
 
-    
-    static DeeringNormalLookupTable lookupTable;
-    public DeeringNormalCodec() {
-        super();
-        if (lookupTable == null)
-            lookupTable = new DeeringNormalLookupTable();
-        numBits = 6;
-    }
+	static DeeringNormalLookupTable lookupTable;
 
-    public DeeringNormalCodec(long numberbits) {
-        super();
-        if (lookupTable == null)
-            lookupTable = new DeeringNormalLookupTable();
-        numBits = numberbits;
-    }
+	public DeeringNormalCodec()
+	{
+		super();
+		if ( lookupTable == null ) {
+			lookupTable = new DeeringNormalLookupTable();
+		}
+		this.numBits = 6;
+	}
 
-    public Vec3D convertCodeToVec(long sextant, long octant, long theta,
-            long psi) {
+	public DeeringNormalCodec( long numberbits )
+	{
+		super();
+		if ( lookupTable == null ) {
+			lookupTable = new DeeringNormalLookupTable();
+		}
+		this.numBits = numberbits;
+	}
 
-        // Size of code = 6+2*numBits, and max code size is 32 bits,
-        // so numBits must be <= 13.
-        // Code layout: [sextant:3][octant:3][theta:numBits][psi:numBits]
+	public Vec3D convertCodeToVec( long sextant, long octant, long theta, long psi )
+	{
+		// Size of code = 6+2*numBits, and max code size is 32 bits,
+		// so numBits must be <= 13.
+		// Code layout: [sextant:3][octant:3][theta:numBits][psi:numBits]
 
-        double psiMax = 0.615479709;
-        long bitRange = 1 << numBits; // 2^numBits
-        double fBitRange = bitRange;
+		double psiMax = 0.615479709;
+		long bitRange = 1 << this.numBits; // 2^numBits
+		double fBitRange = bitRange;
 
-        // For sextants 1, 3, and 5, theta needs to be incremented
-        theta += (sextant & 1);
+		// For sextants 1, 3, and 5, theta needs to be incremented
+		theta += (sextant & 1);
 
-       
-        DeeringLookupEntry lookupEntry = lookupTable.lookupThetaPsi(theta, psi,
-                numBits);
+		DeeringLookupEntry lookupEntry = lookupTable.lookupThetaPsi( theta, psi, this.numBits );
 
-        double x, y, z;
-        double xx = x = lookupEntry.getCosTheta() * lookupEntry.getCosPsi();
-        double yy = y = lookupEntry.getSinPsi();
-        double zz = z = lookupEntry.getSinTheta() * lookupEntry.getCosPsi();
+		double x, y, z;
+		double xx = x = lookupEntry.getCosTheta() * lookupEntry.getCosPsi();
+		double yy = y = lookupEntry.getSinPsi();
+		double zz = z = lookupEntry.getSinTheta() * lookupEntry.getCosPsi();
 
-        // Change coordinates based on the sextant
-        switch ((int) sextant) {
-        case 0: // No op
-            break;
-        case 1: // Mirror about x=z plane
-            z = xx;
-            x = zz;
-            break;
-        case 2: // Rotate CW
-            z = xx;
-            x = yy;
-            y = zz;
-            break;
-        case 3: // Mirror about x=y plane
-            y = xx;
-            x = yy;
-            break;
-        case 4: // Rotate CCW
-            y = xx;
-            z = yy;
-            x = zz;
-            break;
-        case 5: // Mirror about y=z plane
-            z = yy;
-            y = zz;
-            break;
-        }
-        ;
+		// Change coordinates based on the sextant
+		switch ( (int)sextant ) {
+			case 0: // No op
+				break;
+			case 1: // Mirror about x=z plane
+				z = xx;
+				x = zz;
+				break;
+			case 2: // Rotate CW
+				z = xx;
+				x = yy;
+				y = zz;
+				break;
+			case 3: // Mirror about x=y plane
+				y = xx;
+				x = yy;
+				break;
+			case 4: // Rotate CCW
+				y = xx;
+				z = yy;
+				x = zz;
+				break;
+			case 5: // Mirror about y=z plane
+				z = yy;
+				y = zz;
+				break;
+		}
 
-        // Change some more based on the octant
-        // if first bit is 0, negate x component
-        if ((octant & 0x4) == 0)
-            x = -x;
+		// Change some more based on the octant
+		// if first bit is 0, negate x component
+		if ( (octant & 0x4) == 0 ) {
+			x = -x;
+		}
 
-        // if second bit is 0, negate y component
-        if ((octant & 0x2) == 0)
-            y = -y;
+		// if second bit is 0, negate y component
+		if ( (octant & 0x2) == 0 ) {
+			y = -y;
+		}
 
-        // if third bit is 0, negate z component
-        if ((octant & 0x1) == 0)
-            z = -z;
+		// if third bit is 0, negate z component
+		if ( (octant & 0x1) == 0 ) {
+			z = -z;
+		}
 
-        return new Vec3D(x, y, z);
-    }
+		return new Vec3D( x, y, z );
+	}
 
-    public DeeringCode unpackCode(long code) {
-        long mask = ((1 << numBits) - 1) & 0xFFFFFFFFL;
+	public DeeringCode unpackCode( long code )
+	{
+		long mask = ((1 << this.numBits) - 1) & 0xFFFFFFFFL;
 
-        return new DeeringCode((code >> (numBits + numBits + 3)) & 0x7,
-                (code >> (numBits + numBits)) & 0x7,
-                (code >> (numBits)) & mask, (code) & mask);
-    }
+		return new DeeringCode( (code >> (this.numBits + this.numBits + 3)) & 0x7, (code >> (this.numBits + this.numBits)) & 0x7, (code >> (this.numBits)) & mask, (code) & mask );
+	}
 
 }

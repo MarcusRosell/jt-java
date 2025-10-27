@@ -16,37 +16,43 @@ import java.util.zip.Inflater;
  * 
  * @author przym
  */
-public class InternalInflater implements IInflater {
+public class InternalInflater implements IInflater
+{
+	Inflater inflater;
 
-    Inflater inflater;
+	@Override
+	public void init( boolean nowrap )
+	{
+		this.inflater = new Inflater( nowrap );
+	}
 
-    @Override
-	public void init(boolean nowrap) {
-        inflater = new Inflater(nowrap);
-    }
+	@Override
+	public boolean finished()
+	{
+		return this.inflater.finished();
+	}
 
-    @Override
-	public boolean finished() {
-        return inflater.finished();
-    }
+	@Override
+	public boolean needsInput()
+	{
+		return this.inflater.needsInput();
+	}
 
-    @Override
-	public boolean needsInput() {
-        return inflater.needsInput();
-    }
+	@Override
+	public void setInput( byte[] tmp )
+	{
+		this.inflater.setInput( tmp );
+	}
 
-    @Override
-	public void setInput(byte[] tmp) {
-        inflater.setInput(tmp);
-    }
+	@Override
+	public int inflate( byte[] p ) throws DataFormatException
+	{
+		return this.inflater.inflate( p );
+	}
 
-    @Override
-	public int inflate(byte[] p) throws DataFormatException {
-        return inflater.inflate(p);
-    }
-
-    @Override
-	public void end() {
-        inflater.end();
-    }
+	@Override
+	public void end()
+	{
+		this.inflater.end();
+	}
 }

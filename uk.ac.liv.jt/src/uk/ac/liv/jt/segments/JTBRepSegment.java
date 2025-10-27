@@ -26,6 +26,9 @@
  * 
  ******************************************************************************/
 package uk.ac.liv.jt.segments;
+
+import uk.ac.liv.jt.internal.BundleAccessor;
+
 /**
  * A JT B-rep segment. 
  * TODO: implement
@@ -36,7 +39,6 @@ public class JTBRepSegment extends JTSegment {
     @Override
     public void read() throws java.io.IOException {
         super.read();
-        System.err.println("Todo: implement " + getClass().getSimpleName());
-    };
-
+		BundleAccessor.getLogger().info( "No support for {}", getClass().getSimpleName() ); //$NON-NLS-1$
+	}
 }

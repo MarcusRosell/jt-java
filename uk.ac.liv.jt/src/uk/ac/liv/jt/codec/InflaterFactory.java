@@ -12,25 +12,30 @@ package uk.ac.liv.jt.codec;
  * 
  * @author przym
  */
-public class InflaterFactory implements IInflaterFactory {
-    
-    private static IInflaterFactory factory;
-    
-    public static void setInflaterFactory(IInflaterFactory factory) {
-        InflaterFactory.factory = factory;
-    }
-    
-    public static IInflaterFactory getInflaterFactoryInstance() {
-        if(InflaterFactory.factory == null)
-            InflaterFactory.factory = new InflaterFactory();
-        return factory;
-    }
-    
-    protected InflaterFactory() { }
-    
-    @Override
-	public IInflater createInflater() {
-        return new InternalInflater();
-    }
-        
+public class InflaterFactory implements IInflaterFactory
+{
+	private static IInflaterFactory factory;
+
+	public static void setInflaterFactory( IInflaterFactory factory )
+	{
+		InflaterFactory.factory = factory;
+	}
+
+	public static IInflaterFactory getInflaterFactoryInstance()
+	{
+		if ( InflaterFactory.factory == null ) {
+			InflaterFactory.factory = new InflaterFactory();
+		}
+		return factory;
+	}
+
+	protected InflaterFactory()
+	{}
+
+	@Override
+	public IInflater createInflater()
+	{
+		return new InternalInflater();
+	}
+
 }

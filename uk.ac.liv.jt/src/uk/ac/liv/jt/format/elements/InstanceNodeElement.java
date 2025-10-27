@@ -36,30 +36,33 @@ import java.io.IOException;
  * @author fabio
  *
  */
-public class InstanceNodeElement extends BaseNodeElement {
+public class InstanceNodeElement extends BaseNodeElement
+{
 
-    public int instancedNodeObjectId;
+	public int instancedNodeObjectId;
 
-    @Override
-    public void read() throws IOException {
-        super.read();
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-        short versionNumber = -1;
-                if(reader.MAJOR_VERSION >= 9){
-                        versionNumber = reader.readI16();
-                        if(versionNumber != 1){
-                                throw new IllegalArgumentException("Found invalid version number: " + versionNumber);
-                        }
-                }
+		short versionNumber = -1;
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			versionNumber = this.reader.readI16();
+			if ( versionNumber != 1 ) {
+				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
+			}
+		}
 
-        instancedNodeObjectId = reader.readI32();
-        // System.out.println("Instanced node id" + instancedNodeObjectId);
+		this.instancedNodeObjectId = this.reader.readI32();
+		// System.out.println("Instanced node id" + instancedNodeObjectId);
 
-    }
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + " [" + instancedNodeObjectId+"]";
-    }
+	@Override
+	public String toString()
+	{
+		return super.toString() + " [" + this.instancedNodeObjectId + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+	}
 
 }

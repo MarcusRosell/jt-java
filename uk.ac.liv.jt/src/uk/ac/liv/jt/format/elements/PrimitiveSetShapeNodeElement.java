@@ -42,15 +42,14 @@ public class PrimitiveSetShapeNodeElement extends BaseShapeNodeElement {
     public void read() throws IOException {
         super.read();
 
-        textureCoordBinding = reader.readI32();
+		this.textureCoordBinding = this.reader.readI32();
 
-        colorBinding = reader.readI32();
-        psqpbitPerVertex = reader.readU8();
-        psqpbitPerColor = reader.readU8();
-        versionNumber = reader.readI16();
-        if (versionNumber == 1)
-            textureCoordGenType = reader.readI32();
+		this.colorBinding = this.reader.readI32();
+		this.psqpbitPerVertex = this.reader.readU8();
+		this.psqpbitPerColor = this.reader.readU8();
+		this.versionNumber = this.reader.readI16();
+		if ( this.versionNumber == 1 )
+			this.textureCoordGenType = this.reader.readI32();
 
     }
-
 }

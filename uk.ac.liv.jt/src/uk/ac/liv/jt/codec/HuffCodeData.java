@@ -27,80 +27,93 @@
  ******************************************************************************/
 package uk.ac.liv.jt.codec;
 
-public class HuffCodeData {
-	
+public class HuffCodeData
+{
 	/* The data associated to each nodes */
-	
-    int symbol;
-    int codeLen;
-    long bitCode;
-    int assValue;
-    int index;
 
-    public HuffCodeData(int symbol, int assValue) {
-        super();
-        this.symbol = symbol;
-        this.assValue = assValue;
-    }
+	int symbol;
+	int codeLen;
+	long bitCode;
+	int assValue;
+	int index;
 
-    public HuffCodeData(int symbol, int assValue, int codeLen, long bitCode) {
-        super();
-        this.symbol = symbol;
-        this.assValue = assValue;
-        this.codeLen = codeLen;
-        this.bitCode = bitCode;
-    }
+	public HuffCodeData( int symbol, int assValue )
+	{
+		super();
+		this.symbol = symbol;
+		this.assValue = assValue;
+	}
 
-    public int getSymbol() {
-        return symbol;
-    }
+	public HuffCodeData( int symbol, int assValue, int codeLen, long bitCode )
+	{
+		super();
+		this.symbol = symbol;
+		this.assValue = assValue;
+		this.codeLen = codeLen;
+		this.bitCode = bitCode;
+	}
 
-    public void setSymbol(int symbol) {
-        this.symbol = symbol;
-    }
+	public int getSymbol()
+	{
+		return this.symbol;
+	}
 
-    public long getCodeLen() {
-        return codeLen;
-    }
+	public void setSymbol( int symbol )
+	{
+		this.symbol = symbol;
+	}
 
-    public void setCodeLen(int codeLen) {
-        this.codeLen = codeLen;
-    }
+	public long getCodeLen()
+	{
+		return this.codeLen;
+	}
 
-    public long getBitCode() {
-        return bitCode;
-    }
+	public void setCodeLen( int codeLen )
+	{
+		this.codeLen = codeLen;
+	}
 
-    public void setBitCode(long bitCode) {
-        this.bitCode = bitCode;
-    }
+	public long getBitCode()
+	{
+		return this.bitCode;
+	}
 
-    public String codeToString() {
-        String tmp = Long.toBinaryString(bitCode);
+	public void setBitCode( long bitCode )
+	{
+		this.bitCode = bitCode;
+	}
 
-        if (tmp.length() != codeLen) {
-            // Add n "0" at the beginning where
-            // n = codeLen - tmp.length()
-            long nb_0 = codeLen - tmp.length();
-            for (int i = 0; i < nb_0; i++)
-                tmp = "0" + tmp;
-        }
+	public String codeToString()
+	{
+		String tmp = Long.toBinaryString( this.bitCode );
 
-        return tmp;
+		if ( tmp.length() != this.codeLen ) {
+			// Add n "0" at the beginning where
+			// n = codeLen - tmp.length()
+			long nb_0 = this.codeLen - tmp.length();
+			for ( int i = 0; i < nb_0; i++ ) {
+				tmp = "0" + tmp; //$NON-NLS-1$
+			}
+		}
 
-    }
+		return tmp;
 
-    @Override
-    public String toString() {
-        return String.format("Code: %s => Symbol: %d (%d) %d", codeToString(), symbol, assValue, index);
-    }
+	}
 
-    public int getAssValue() {
-        return assValue;
-    }
+	@Override
+	public String toString()
+	{
+		return String.format( "Code: %s => Symbol: %d (%d) %d", codeToString(), this.symbol, this.assValue, this.index ); //$NON-NLS-1$
+	}
 
-    public void setAssValue(int assValue) {
-        this.assValue = assValue;
-    }
+	public int getAssValue()
+	{
+		return this.assValue;
+	}
+
+	public void setAssValue( int assValue )
+	{
+		this.assValue = assValue;
+	}
 
 }

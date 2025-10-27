@@ -29,78 +29,80 @@ package uk.ac.liv.jt.codec;
 
 import java.util.ArrayList;
 
-public class HuffTreeNodeList extends ArrayList<HuffTreeNode> {
-	
+public class HuffTreeNodeList extends ArrayList<HuffTreeNode>
+{
+
 	/* Correspond to the VectorHeap in the appendix C of the specification */
-	
+
 	// Add a node, keeping the ordering (higher frequency first)
-	public void addOrder(HuffTreeNode node) {
-    	int idx = 0;
-    	
-    	while ( idx < size() && node.lowerThan(get(idx)) )
-    		idx++;
+	public void addOrder( HuffTreeNode node )
+	{
+		int idx = 0;
 
-    	add(idx, node);
-		
+		while ( idx < size() && node.lowerThan( get( idx ) ) ) {
+			idx++;
+		}
+
+		add( idx, node );
+
 	}
-	
+
 	@Override
-	public void addLast(HuffTreeNode node) {
-		add(size(), node);		
+	public void addLast( HuffTreeNode node )
+	{
+		add( size(), node );
 	}
 
-  /*  // Get the minimum element and remove it
-     public HuffTreeNode getMin2() {
-
-        if (size() < 1)
-            return null;
-        else if (size() == 1) {
-            HuffTreeNode node = get(0);
-            remove(0);
-            return node;
-        }
-
-        int idxMin = 0;
-        HuffTreeNode min = get(idxMin);
-
-        for (int j = 1; j < size(); j++) {
-            HuffTreeNode el = get(j);
-
-            if (el.lowerThan(min)) {
-                idxMin = j;
-                min = el;
-            }
-        }
-
-        remove(idxMin);
-        
-
-        return min;
-    }*/
+	/*  // Get the minimum element and remove it
+	 public HuffTreeNode getMin2() {
 	
+	    if (size() < 1)
+	        return null;
+	    else if (size() == 1) {
+	        HuffTreeNode node = get(0);
+	        remove(0);
+	        return node;
+	    }
 	
+	    int idxMin = 0;
+	    HuffTreeNode min = get(idxMin);
+	
+	    for (int j = 1; j < size(); j++) {
+	        HuffTreeNode el = get(j);
+	
+	        if (el.lowerThan(min)) {
+	            idxMin = j;
+	            min = el;
+	        }
+	    }
+	
+	    remove(idxMin);
+	    
+	
+	    return min;
+	}*/
+
 	// Get the minimum element and remove it
-     public HuffTreeNode getMin() {
+	public HuffTreeNode getMin()
+	{
+		int idxMin = size() - 1;
+		HuffTreeNode min = get( idxMin );
+		remove( idxMin );
 
-    	 int idxMin = size()-1;
-    	 HuffTreeNode min = get(idxMin);
-    	 remove(idxMin);
+		return min;
+	}
 
-    	 return min;
-     }
+	@Override
+	public String toString()
+	{
+		String res = "["; //$NON-NLS-1$
 
-     
-    @Override
-	public String toString() {
-    	String res = "[";
+		for ( int j = 0; j < size(); j++ ) {
+			HuffTreeNode el = get( j );
+			res += String.format( "%d(%d)(%d),", el.getSymbol(), el.getSymCount(), el.data.assValue ); //$NON-NLS-1$
+		}
 
-        for (int j = 0; j < size(); j++) {
-            HuffTreeNode el = get(j);
-            res += String.format("%d(%d)(%d),", el.getSymbol(), el.getSymCount(), el.data.assValue);
-        }
-        
-        res += "]";
-        return res;
-    }
-
-    }
+		res += "]"; //$NON-NLS-1$
+		return res;
+	}
+}

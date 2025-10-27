@@ -40,8 +40,8 @@ import uk.ac.liv.jt.format.elements.BasePropertyAtomData;
 import uk.ac.liv.jt.format.elements.GroupNodeElement;
 import uk.ac.liv.jt.format.elements.InstanceNodeElement;
 import uk.ac.liv.jt.format.elements.PartitionNodeElement;
+import uk.ac.liv.jt.internal.BundleAccessor;
 import uk.ac.liv.jt.types.GUID;
-
 
 /**
  * The Logical Scene Graph segment contains the main structural information for a JT file.
@@ -55,179 +55,177 @@ import uk.ac.liv.jt.types.GUID;
  * @author fabio
  *
  */
-public class LSGSegment extends JTSegment {
+public class LSGSegment extends JTSegment
+{
 
-    /** the Graph structure holding the LSG representation */
-    Map<BaseNodeElement, List <BaseNodeElement>> graph;
+	/** the Graph structure holding the LSG representation */
+	Map<BaseNodeElement, List<BaseNodeElement>> graph;
 
-    /** the root of the JT Graph representation used for visiting the graph */
-    GroupNodeElement start;
+	/** the root of the JT Graph representation used for visiting the graph */
+	GroupNodeElement start;
 
 	public GroupNodeElement getStartElement()
 	{
 		return this.start;
 	}
 
-    /** specifies if rendering the scene graph is requested */
-    public static boolean doRender = false;
+	/** specifies if rendering the scene graph is requested */
+	public static boolean doRender = false;
 
+	/** 
+	 * Method to get the internal graph representation.
+	 * This method does not read all the late loaded segments.
+	 * @return the internal graph representation.
+	 * @throws IOException
+	 */
+	public Map<BaseNodeElement, List<BaseNodeElement>> getGraph() throws IOException
+	{
+		if ( this.graph == null ) {
+			read();
+		}
+		return this.graph;
+	}
 
-    /** 
-     * Method to get the internal graph representation.
-     * This method does not read all the late loaded segments.
-     * @return the internal graph representation.
-     * @throws IOException
-     */
-    public Map<BaseNodeElement, List <BaseNodeElement>> getGraph() throws IOException{
-        if (graph == null)
-            read();
-        return graph;
-    }
-    @Override
-    /** reads the segment LSG and generates the internal representation */
-    public void read() throws IOException {
+	@Override
+	/** reads the segment LSG and generates the internal representation */
+	public void read() throws IOException
+	{
 
-        super.read();
-        
-        
-        graph = new HashMap<BaseNodeElement, List <BaseNodeElement>>(100);
-        HashMap<Integer, BaseNodeElement> nodes = new HashMap<Integer, BaseNodeElement>(100);
-        HashMap<Integer, BaseAttributeElement> attributes = new HashMap<Integer, BaseAttributeElement>(100);
-        HashMap<Integer, BasePropertyAtomData> properties = new HashMap<Integer, BasePropertyAtomData>(100);
+		super.read();
 
-        // read all the nodes and attributes
-        while (true) {
+		this.graph = new HashMap<>();
+		Map<Integer, BaseNodeElement> nodes = new HashMap<>();
+		Map<Integer, BaseAttributeElement> attributes = new HashMap<>();
+		Map<Integer, BasePropertyAtomData> properties = new HashMap<>();
 
-            JTElement element2 = JTElement.createJTElement(reader);
+		// read all the nodes and attributes
+		while ( true ) {
 
-            // *** SEE FIGURE 9: the ZLIB header is applied ONLY to the first
-            // element in the Segment.
-            element2.read(); 
-            // End of elements
-            if (element2.id.equals(GUID.END_OF_ELEMENTS))
-                break;
-            if (element2 instanceof PartitionNodeElement && start == null) {
-                PartitionNodeElement pne = (PartitionNodeElement) element2;
-                start = pne;
-            }
-            // we have an actual node
-            if (element2 instanceof BaseNodeElement) {
-                BaseNodeElement node = (BaseNodeElement) element2;
-                nodes.put(node.getObjectID(), node);
-             // we have an attribute
-            } else if (element2 instanceof BaseAttributeElement) {
-                BaseAttributeElement attr = (BaseAttributeElement) element2;
-                attributes.put(attr.getObjectID(), attr);
-            } else
-                System.out
-                .println("Should not happen : not node nor attribute");
+			JTElement element2 = JTElement.createJTElement( this.reader );
 
-        }
+			// *** SEE FIGURE 9: the ZLIB header is applied ONLY to the first
+			// element in the Segment.
+			element2.read();
+			// End of elements
+			if ( element2.id.equals( GUID.END_OF_ELEMENTS ) ) {
+				break;
+			}
+			if ( element2 instanceof PartitionNodeElement pne && this.start == null ) {
+				this.start = pne;
+			}
+			// we have an actual node
+			if ( element2 instanceof BaseNodeElement node ) {
+				nodes.put( node.getObjectID(), node );
+				// we have an attribute
+			}
+			else if ( element2 instanceof BaseAttributeElement attr ) {
+				attributes.put( attr.getObjectID(), attr );
+			}
+			else {
+				BundleAccessor.getLogger().error( "Should not happen : not node nor attribute" ); //$NON-NLS-1$
+			}
+		}
 
-        //read all the Property Atom Elements
+		//read all the Property Atom Elements
 
-        while (true) {
+		while ( true ) {
 
-            JTElement element2 = JTElement.createJTElement(reader);
+			JTElement element2 = JTElement.createJTElement( this.reader );
 
-            // *** SEE FIGURE 9: the ZLIB header is applied ONLY to the first
-            // element in the Segment.
+			// *** SEE FIGURE 9: the ZLIB header is applied ONLY to the first
+			// element in the Segment.
 
-            element2.read();
+			element2.read();
 
-            if (element2.id.equals(GUID.END_OF_ELEMENTS))
-                break;
-            if (element2 instanceof BasePropertyAtomData) {
-                BasePropertyAtomData node = (BasePropertyAtomData) element2;
-                properties.put(node.getObjectID(), node);
+			if ( element2.id.equals( GUID.END_OF_ELEMENTS ) ) {
+				break;
+			}
+			if ( element2 instanceof BasePropertyAtomData node ) {
+				properties.put( node.getObjectID(), node );
+			}
+			else {
+				BundleAccessor.getLogger().error( "Non property element found in the Property atoms" ); //$NON-NLS-1$
+			}
+		}
 
-            } else
-                System.out
-                .println("Error: Non property element found in the Property atoms ");
+		// for each Node add attributes, children and instances
+		int edgeN = 0;
+		for ( BaseNodeElement b : nodes.values() ) {
+			// add all the attributes
+			for ( int i = 0; i < b.attObjectId.length; i++ ) {
+				BaseAttributeElement baseAttributeElement = attributes.get( b.attObjectId[i] );
+				b.attributes[i] = baseAttributeElement;
+				if ( baseAttributeElement == null ) {
+					BundleAccessor.getLogger().error( "null attribute!" ); //$NON-NLS-1$
+				}
+			}
+			// add the vertex to the graph
+			List<BaseNodeElement> l = new LinkedList<>();
+			// graph.addVertex(b);
+			// if it has child, add them to the graph
+			if ( b instanceof GroupNodeElement g ) {
+				for ( int child : g.childNodeObjectId ) {
+					BaseNodeElement to = nodes.get( child );
+					if ( to == null ) {
+						BundleAccessor.getLogger().error( "child is a null node!" ); //$NON-NLS-1$
+					}
+					else {
+						l.add( to );
+					}
+				}
+			}
+			// if it is an instance node, add the referenced node to the instanced node
+			if ( b instanceof InstanceNodeElement ine ) {
+				BaseNodeElement to = nodes.get( ine.instancedNodeObjectId );
+				if ( to == null ) {
+					BundleAccessor.getLogger().error( "child is a null node!" ); //$NON-NLS-1$
+				}
+				else {
+					l.add( to );
+				}
+			}
+			this.graph.put( b, l );
+		}
 
-        }
+		// Finally read the Property table, adding the properties to the nodes
 
+		short versionNumber = this.reader.readI16();
+		BasePropertyAtomData[][] dummy = new BasePropertyAtomData[0][0];
+		int count = this.reader.readI32();
+		for ( int i = 0; i < count; i++ ) {
+			int refId = this.reader.readI32();
+			int key;
+			int value;
 
-        // for each Node add attributes, childs and instances
-        int edgeN = 0;
-        for (BaseNodeElement b : nodes.values()) {
-            // add all the attributes
-            for (int i = 0; i < b.attObjectId.length; i++) {
-                BaseAttributeElement baseAttributeElement = attributes
-                .get(b.attObjectId[i]);
-                b.attributes[i] = baseAttributeElement;
-                if (baseAttributeElement == null)
-                    System.out.println("Error: null attribute!");
-            }
-            // add the vertex to the graph
-            List<BaseNodeElement> l = new LinkedList<BaseNodeElement>();
-           // graph.addVertex(b);
-            // if it has child, add them to the graph
-            if (b instanceof GroupNodeElement) {
-                GroupNodeElement g = (GroupNodeElement) b;
-                for (int child : g.childNodeObjectId) {
-                    BaseNodeElement to = nodes.get(child);
-                    if (to == null)
-                        System.out.println("Error: child is a null node!");
-                    else
-                        l.add(to);
-                }
-            }
-            // if it is an instance node, add the referenced node to the instanced node
-            if (b instanceof InstanceNodeElement) {
-                InstanceNodeElement ine = (InstanceNodeElement) b;
-                BaseNodeElement to = nodes.get(ine.instancedNodeObjectId);
-                if (to == null)
-                    System.out.println("Error: child is a null node!");
-                else
-                    l.add(to);
-            }
-            graph.put(b, l);
-        }
+			List<BasePropertyAtomData[]> pro = new LinkedList<>();
+			BundleAccessor.getLogger().trace( "Node object id: {} , {} of {}", refId, i + 1, count ); //$NON-NLS-1$
+			while ( (key = this.reader.readI32()) != 0 ) {
+				value = this.reader.readI32();
+				BundleAccessor.getLogger().trace( "{} = {};", properties.get( key ), properties.get( value ) ); //$NON-NLS-1$
+				BasePropertyAtomData basePropertyAtomData = properties.get( key );
+				BasePropertyAtomData basePropertyAtomData2 = properties.get( value );
+				pro.add( new BasePropertyAtomData[] { basePropertyAtomData, basePropertyAtomData2 } );
+			}
+			nodes.get( refId ).properties = pro.toArray( dummy );
+		}
 
+		// Graph rendering: represents the graph to screen
+		if ( doRender ) {
+			renderGraphRepresentation();
+		}
 
-        // Finally read the Property table, adding the properties to the nodes
-        
-        short versionNumber = reader.readI16();
-        BasePropertyAtomData[][] dummy = new BasePropertyAtomData[0][0];
-        int count = reader.readI32();
-        for (int i = 0; i < count; i++) {
-            int id = reader.readI32();
-            int key, value;
-            LinkedList<BasePropertyAtomData[]> pro = new LinkedList<BasePropertyAtomData[]>();
-            // System.out.println("\nNode object id: " + id + "(" + (i + 1)
-            // + " of " + count + ")");
-            while ((key = reader.readI32()) != 0) {
-                value = reader.readI32();
-                // System.out.println(properties.get(key) + " = "
-                // + properties.get(value) + ";");
-                BasePropertyAtomData basePropertyAtomData = properties.get(key);
-                BasePropertyAtomData basePropertyAtomData2 = properties
-                .get(value);
-                pro.add(new BasePropertyAtomData[] { basePropertyAtomData,
-                        basePropertyAtomData2 });
+	}
 
-            }
-            nodes.get(id).properties = pro.toArray(dummy);
-        }
+	/** returns the JTSegment for  GUID */
+	public JTSegment getSegment( GUID segmentid )
+	{
+		return this.file.getSegment( segmentid );
+	}
 
-        // Graph rendering: represents the graph to screen
-        if (doRender)
-            renderGraphRepresentation();
+	/** Method to render the graph to a graph diagram, for debugging*/
 
-    }
-
-    /** returns the JTSegment for  GUID */
-    public JTSegment getSegment(GUID segmentid) {
-
-        return file.getSegment(segmentid);
-    }
-    
-    
-    
-    /** Method to render the graph to a graph diagram, for debugging*/
-
-    public void renderGraphRepresentation() {
+	public void renderGraphRepresentation()
+	{
 //
 //        
 //        Graph<BaseNodeElement, Integer> gg = new DirectedSparseGraph<BaseNodeElement, Integer>();
@@ -320,7 +318,6 @@ public class LSGSegment extends JTSegment {
 //
 //        frame.pack();
 //        frame.setVisible(true);
-    }
-
+	}
 
 }

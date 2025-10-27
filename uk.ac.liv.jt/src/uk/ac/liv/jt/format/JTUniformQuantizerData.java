@@ -51,21 +51,21 @@ public class JTUniformQuantizerData {
     }
 
     public void read() throws IOException {
-        min = reader.readF32();
-        max = reader.readF32();
-        numberOfBits = reader.readU8();
+		this.min = this.reader.readF32();
+		this.max = this.reader.readF32();
+		this.numberOfBits = this.reader.readU8();
     }
 
     public float getMin() {
-        return min;
+		return this.min;
     }
 
     public float getMax() {
-        return max;
+		return this.max;
     }
 
     public int getNumberOfBits() {
-        return numberOfBits;
+		return this.numberOfBits;
     }
 
 }

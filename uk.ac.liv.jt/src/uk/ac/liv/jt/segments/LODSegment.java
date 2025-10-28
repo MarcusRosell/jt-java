@@ -32,26 +32,29 @@ import java.io.IOException;
 import uk.ac.liv.jt.debug.DebugInfo;
 import uk.ac.liv.jt.format.JTElement;
 import uk.ac.liv.jt.internal.BundleAccessor;
+
 /** 
  * Shape LOD Segment contains an Element that defines the geometric shape 
  * definition data (e.g. vertices, polygons, normals, etc) for a particular 
  * shape Level Of Detail or alternative representation. (p. 117)
  */
 
-public class LODSegment extends JTSegment {
-	
-    int level;
-    public JTElement e;
+public class LODSegment extends JTSegment
+{
+	protected int level;
+	private JTElement e;
 
-    protected LODSegment(int level) {
-        this.level = level;
-    }
+	protected LODSegment( int level )
+	{
+		this.level = level;
+	}
 
-    @Override
-    public void read() throws IOException {
-        super.read();
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
-        if (DebugInfo.debugMode) {
+		if ( DebugInfo.debugMode ) {
 
 			BundleAccessor.getLogger().debug( "- Header" ); //$NON-NLS-1$
 			BundleAccessor.getLogger().debug( "  Id: {}", this.id ); //$NON-NLS-1$
@@ -61,18 +64,28 @@ public class LODSegment extends JTSegment {
 
 			BundleAccessor.getLogger().debug( "**** Shape LOD Element ****" ); //$NON-NLS-1$
 			BundleAccessor.getLogger().debug( "" ); //$NON-NLS-1$
-        }
+		}
 
 		JTElement element = JTElement.createJTElement( this.reader );
 
-        if (DebugInfo.debugMode) {
+		if ( DebugInfo.debugMode ) {
 			BundleAccessor.getLogger().debug( "Element length: {}", element.getLength() ); //$NON-NLS-1$
 			BundleAccessor.getLogger().debug( "Object Type Id: {}", element.getId() ); //$NON-NLS-1$
 			BundleAccessor.getLogger().debug( "Object Base Type: {}", element.getObjectBaseType() ); //$NON-NLS-1$
-        }
+		}
 
-        /* Shape LOD Element p. 118 */        
-        element.read();
-		this.e = element;
-    }
+		/* Shape LOD Element p. 118 */
+		element.read();
+		this.setE( element );
+	}
+
+	public JTElement getE()
+	{
+		return e;
+	}
+
+	public void setE( JTElement e )
+	{
+		this.e = e;
+	}
 }

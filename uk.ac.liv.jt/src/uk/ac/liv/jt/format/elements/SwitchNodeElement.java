@@ -31,8 +31,8 @@ import java.io.IOException;
 
 public class SwitchNodeElement extends GroupNodeElement {
 
-    public short versionNumber;
-    public int selectedChild;
+	private short versionNumber;
+	private int selectedChild;
 
     @Override
     public void read() throws IOException {
@@ -40,4 +40,15 @@ public class SwitchNodeElement extends GroupNodeElement {
 		this.versionNumber = this.reader.readI16();
 		this.selectedChild = this.reader.readI32();
     }
+
+	public int getSelectedChild()
+	{
+		return this.selectedChild;
+	}
+
+	public short getVersionNumber()
+	{
+		return this.versionNumber;
+	}
+
 }

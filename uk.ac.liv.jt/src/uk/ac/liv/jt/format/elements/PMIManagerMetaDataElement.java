@@ -34,18 +34,18 @@ import uk.ac.liv.jt.internal.BundleAccessor;
 
 public class PMIManagerMetaDataElement extends JTElement
 {
-	long nodeFlags;
-	int[] attObjectId;
-	int versionNumber;
-	int reservedField;
-	int associationCount;
-	int stringCount;
-	int userAttributeCount;
-	int modelViewCount;
-	int genericEntityCount;
-	int cadTagFlag;
-	int cadTagIndexCount;
-	ModelView[] views;
+	private long nodeFlags;
+	private int[] attObjectId;
+	private int versionNumber;
+	private int reservedField;
+	private int associationCount;
+	private int stringCount;
+	private int userAttributeCount;
+	private int modelViewCount;
+	private int genericEntityCount;
+	private int cadTagFlag;
+	private int cadTagIndexCount;
+	private ModelView[] views;
 	private String[] stringTable;
 	private GenericEntry[] genericEntries;
 
@@ -184,7 +184,5 @@ public class PMIManagerMetaDataElement extends JTElement
 
 		int coordSysCount = getReader().readI32();
 		BundleAccessor.getLogger().info( "       Coord Sys count: {}", coordSysCount ); //$NON-NLS-1$
-
 	}
-
 }

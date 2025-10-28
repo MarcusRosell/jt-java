@@ -39,20 +39,19 @@ import uk.ac.liv.jt.types.Int32Range;
 
 public class PartitionNodeElement extends GroupNodeElement
 {
-
 	public static final int MAX_VERTICES = 400000;
-	public int partitionFlags;
-	public String filename;
-	public BBoxF32 transformedBox;
-	public BBoxF32 reservedField;
-	public float area;
-	public Int32Range vertexCountRange;
+	private int partitionFlags;
+	private String filename;
+	private BBoxF32 transformedBox;
+	private BBoxF32 reservedField;
+	private float area;
+	private Int32Range vertexCountRange;
 
-	public Int32Range nodeCountRange;
+	private Int32Range nodeCountRange;
 
-	public Int32Range polygonCountRange;
+	private Int32Range polygonCountRange;
 
-	public BBoxF32 untransformedBox;
+	private BBoxF32 untransformedBox;
 
 	public float getArea()
 	{

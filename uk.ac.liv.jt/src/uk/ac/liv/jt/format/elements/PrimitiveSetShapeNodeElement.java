@@ -52,4 +52,35 @@ public class PrimitiveSetShapeNodeElement extends BaseShapeNodeElement {
 			this.textureCoordGenType = this.reader.readI32();
 
     }
+
+	public int getTextureCoordBinding()
+	{
+		return this.textureCoordBinding;
+	}
+
+	public int getColorBinding()
+	{
+		return this.colorBinding;
+	}
+
+	public int getPsqpbitPerColor()
+	{
+		return this.psqpbitPerColor;
+	}
+
+	public int getPsqpbitPerVertex()
+	{
+		return this.psqpbitPerVertex;
+	}
+
+	public short getVersionNumber()
+	{
+		return this.versionNumber;
+	}
+
+	public int getTextureCoordGenType()
+	{
+		return this.textureCoordGenType;
+	}
+
 }

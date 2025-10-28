@@ -47,7 +47,6 @@ import uk.ac.liv.jt.internal.BundleAccessor;
  */
 public class MetadataSegment extends JTSegment
 {
-
 	@Override
 	public void read() throws java.io.IOException
 	{
@@ -67,7 +66,5 @@ public class MetadataSegment extends JTSegment
 		BundleAccessor.getLogger().trace( "     Object Base Type: {}", element.getObjectBaseType() ); //$NON-NLS-1$
 
 		element.read();
-
 	}
-
 }

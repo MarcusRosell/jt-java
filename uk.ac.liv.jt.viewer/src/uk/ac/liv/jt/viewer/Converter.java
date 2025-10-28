@@ -152,7 +152,7 @@ public class Converter
 		if ( o instanceof LODSegment ) {
 			lod = (LODSegment)o;
 			lod.read();
-			l = (TriStripSetShapeLODElement)lod.e;
+			l = (TriStripSetShapeLODElement)lod.getE();
 		}
 		else {
 			System.err.println( "Unsupported segment type: " + o.getClass() );
@@ -170,9 +170,9 @@ public class Converter
 		int nbdVertices = 0;
 		int nbdfaces = 0;
 
-		for ( int i = 0; i < l.primitiveListIndices.length - 1; i++ ) {
-			int start = l.primitiveListIndices[i];
-			int end = l.primitiveListIndices[i + 1];
+		for ( int i = 0; i < l.getPrimitiveListIndices().length - 1; i++ ) {
+			int start = l.getPrimitiveListIndices()[i];
+			int end = l.getPrimitiveListIndices()[i + 1];
 			nbdVertices += end - start;
 			nbdfaces += end - start - 2;
 		}
@@ -183,13 +183,13 @@ public class Converter
 		int[] faceIndices = new int[nbdfaces * 3];
 		SceneGraphComponent[] ret = new SceneGraphComponent[1];//[l.primitiveListIndices.length - 1];
 
-		if ( l.uncompressed ) {
-			vertices = l.vertex;
-			normals = l.normal;
+		if ( l.isUncompressed() ) {
+			vertices = l.getVertex();
+			normals = l.getNormal();
 			int k = 0;
-			for ( int i = 0; i < l.primitiveListIndices.length - 1; i++ ) {
-				int start = l.primitiveListIndices[i];
-				int end = l.primitiveListIndices[i + 1];
+			for ( int i = 0; i < l.getPrimitiveListIndices().length - 1; i++ ) {
+				int start = l.getPrimitiveListIndices()[i];
+				int end = l.getPrimitiveListIndices()[i + 1];
 				for ( int f = start; f < end - 2; f++ ) {
 					if ( f % 2 == 0 ) {
 						faceIndices[k + 0] = f;
@@ -207,21 +207,21 @@ public class Converter
 		}
 		else {
 			int k = 0;
-			for ( int i = 0; i < l.primitiveListIndices.length - 1; i++ ) {
-				int start = l.primitiveListIndices[i];
-				int end = l.primitiveListIndices[i + 1];
+			for ( int i = 0; i < l.getPrimitiveListIndices().length - 1; i++ ) {
+				int start = l.getPrimitiveListIndices()[i];
+				int end = l.getPrimitiveListIndices()[i + 1];
 
 				for ( int v = start; v < end; v++ ) {
 
 					int j = v * 3;
-					int idx_raw = l.vertexDataIndices[v];
-					vertices[j + 0] = l.quantVertexCoord.getXValues()[idx_raw];
-					vertices[j + 1] = l.quantVertexCoord.getYValues()[idx_raw];
-					vertices[j + 2] = l.quantVertexCoord.getZValues()[idx_raw];
+					int idx_raw = l.getVertexDataIndices()[v];
+					vertices[j + 0] = l.getQuantVertexCoord().getXValues()[idx_raw];
+					vertices[j + 1] = l.getQuantVertexCoord().getYValues()[idx_raw];
+					vertices[j + 2] = l.getQuantVertexCoord().getZValues()[idx_raw];
 
-					normals[j + 0] = l.normals[idx_raw].getX();
-					normals[j + 1] = l.normals[idx_raw].getY();
-					normals[j + 2] = l.normals[idx_raw].getZ();
+					normals[j + 0] = l.getNormals()[idx_raw].getX();
+					normals[j + 1] = l.getNormals()[idx_raw].getY();
+					normals[j + 2] = l.getNormals()[idx_raw].getZ();
 				}
 				for ( int f = start; f < end - 2; f++ ) {
 					if ( f % 2 == 0 ) {
@@ -239,7 +239,7 @@ public class Converter
 			}
 		}
 		l = null;
-		lod.e = null;
+		lod.setE( null );
 
 		ifsf.setFaceCount( faceIndices.length / 3 );
 		ifsf.setFaceIndices( faceIndices );
@@ -263,16 +263,16 @@ public class Converter
 
 	public static SceneGraphComponent getGeometry( PartitionNodeElement self, LSGSegment lsgSegment ) throws IOException
 	{
-		System.out.println( "Loading " + self.filename );
+		System.out.println( "Loading " + self.getFilename() );
 
-		URI u = lsgSegment.file.uri.resolve( self.filename );
+		URI u = lsgSegment.getFile().uri.resolve( self.getFilename() );
 
 		if ( !new File( u ).exists() ) {
-			SceneGraphComponent c = generateBBOX( self, "Missing  JT file " + self.filename + "- BBox only" );
+			SceneGraphComponent c = generateBBOX( self, "Missing  JT file " + self.getFilename() + "- BBox only" );
 			return c;
 
 		}
-		if ( self.vertexCountRange.max < PartitionNodeElement.MAX_VERTICES ) {
+		if ( self.getVertexCountRange().max < PartitionNodeElement.MAX_VERTICES ) {
 			try {
 				JTFile jtFile = new JTFile( new File( u ), u );
 				LSGSegment lsg = jtFile.read();
@@ -283,12 +283,12 @@ public class Converter
 			}
 			catch ( FileNotFoundException e ) {
 				e.printStackTrace();
-				SceneGraphComponent c = generateBBOX( self, "External JT file " + self.filename + " not found!" );
+				SceneGraphComponent c = generateBBOX( self, "External JT file " + self.getFilename() + " not found!" );
 				return c;
 			}
 		}
 		else {
-			SceneGraphComponent c = generateBBOX( self, "External JT file with " + self.vertexCountRange.max + " vertices - BBox only" );
+			SceneGraphComponent c = generateBBOX( self, "External JT file with " + self.getVertexCountRange().max + " vertices - BBox only" );
 
 			return c;
 
@@ -301,7 +301,8 @@ public class Converter
 		app.setAttribute( CommonAttributes.TRANSPARENCY_ENABLED, true );
 		app.setAttribute( POLYGON_SHADER + "." + TRANSPARENCY, .8 );
 		app.setAttribute( CommonAttributes.AMBIENT_COLOR, new java.awt.Color( (float)Math.random(), (float)Math.random(), (float)Math.random() ) );
-		Rectangle3D r = BoundingBoxUtility.calculateBoundingBox( new double[][] { self.untransformedBox.getMaxCorner().getVectorDouble(), self.untransformedBox.getMinCorner().getVectorDouble() } );
+		Rectangle3D r = BoundingBoxUtility.calculateBoundingBox( new double[][] { self.getUntransformedBox().getMaxCorner().getVectorDouble(),
+				self.getUntransformedBox().getMinCorner().getVectorDouble() } );
 		IndexedFaceSet cubo = IndexedFaceSetUtility.representAsSceneGraph( r );
 		SceneGraphComponent c = SceneGraphUtility.createFullSceneGraphComponent( s );
 		c.setAppearance( app );
@@ -352,9 +353,9 @@ public class Converter
 	{
 		de.jreality.scene.proxy.scene.SceneGraphComponent scene = new de.jreality.scene.proxy.scene.SceneGraphComponent();
 
-		for ( int i = 0; i < self.primitiveListIndices.length - 1; i++ ) {
-			int start = self.primitiveListIndices[i];
-			int end = self.primitiveListIndices[i + 1];
+		for ( int i = 0; i < self.getPrimitiveListIndices().length - 1; i++ ) {
+			int start = self.getPrimitiveListIndices()[i];
+			int end = self.getPrimitiveListIndices()[i + 1];
 
 			int nbVertices = end - start;
 
@@ -362,14 +363,14 @@ public class Converter
 			double[][] normals = new double[nbVertices][3];
 
 			for ( int v = start; v < end; v++ ) {
-				int idx_raw = self.vertexDataIndices[v];
-				vertices[v - start][0] = self.quantVertexCoord.getXValues()[idx_raw];
-				vertices[v - start][1] = self.quantVertexCoord.getYValues()[idx_raw];
-				vertices[v - start][2] = self.quantVertexCoord.getZValues()[idx_raw];
+				int idx_raw = self.getVertexDataIndices()[v];
+				vertices[v - start][0] = self.getQuantVertexCoord().getXValues()[idx_raw];
+				vertices[v - start][1] = self.getQuantVertexCoord().getYValues()[idx_raw];
+				vertices[v - start][2] = self.getQuantVertexCoord().getZValues()[idx_raw];
 
-				normals[v - start][0] = self.normals[idx_raw].getX();
-				normals[v - start][1] = self.normals[idx_raw].getY();
-				normals[v - start][2] = self.normals[idx_raw].getZ();
+				normals[v - start][0] = self.getNormals()[idx_raw].getX();
+				normals[v - start][1] = self.getNormals()[idx_raw].getY();
+				normals[v - start][2] = self.getNormals()[idx_raw].getZ();
 			}
 
 			IndexedFaceSetFactory ifsf = new IndexedFaceSetFactory();
@@ -426,12 +427,12 @@ public class Converter
 	{
 		PointSetFactory psf = new PointSetFactory();
 
-		double[][] vertices = new double[self.quantVertexCoord.getXValues().length][3];
+		double[][] vertices = new double[self.getQuantVertexCoord().getXValues().length][3];
 
-		for ( int v = 0; v < self.quantVertexCoord.getXValues().length; v++ ) {
-			vertices[v][0] = self.quantVertexCoord.getXValues()[v];
-			vertices[v][1] = self.quantVertexCoord.getYValues()[v];
-			vertices[v][2] = self.quantVertexCoord.getZValues()[v];
+		for ( int v = 0; v < self.getQuantVertexCoord().getXValues().length; v++ ) {
+			vertices[v][0] = self.getQuantVertexCoord().getXValues()[v];
+			vertices[v][1] = self.getQuantVertexCoord().getYValues()[v];
+			vertices[v][2] = self.getQuantVertexCoord().getZValues()[v];
 		}
 		psf.setVertexCount( vertices.length );
 		psf.setVertexCoordinates( vertices );

@@ -40,4 +40,9 @@ public class PolylineSetShapeNodeElement extends VertexShapeNodeElement {
 
     }
 
+	public float getAreaFactor()
+	{
+		return this.areaFactor;
+	}
+
 }

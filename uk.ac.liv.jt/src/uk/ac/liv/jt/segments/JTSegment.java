@@ -48,7 +48,6 @@ import uk.ac.liv.jt.types.GUID;
  */
 public class JTSegment
 {
-
 	protected ByteReader reader;
 
 	protected GUID id;
@@ -56,10 +55,10 @@ public class JTSegment
 	protected int length;
 	protected long attributes;
 	protected int segType;
-	public JTFile file;
+	protected JTFile file;
 	protected Map<GUID, JTElement> elements;
 
-	public long compressionFlag;
+	protected long compressionFlag;
 
 	protected int compressedDataLength;
 
@@ -164,7 +163,7 @@ public class JTSegment
 		// handle ZLIB segment header here
 		if ( this.segType < 5 || this.segType > 16 ) {
 			readHeaderZLIB();
-			if ( this.compressionFlag == 2 && this.compressionAlgorithm == 2 ) {
+			if ( this.getCompressionFlag() == 2 && this.compressionAlgorithm == 2 ) {
 				this.reader.setInflating( true, this.compressedDataLength );
 			}
 		}
@@ -263,6 +262,16 @@ public class JTSegment
 	public Map<GUID, JTElement> getElements()
 	{
 		return this.elements;
+	}
+
+	public long getCompressionFlag()
+	{
+		return compressionFlag;
+	}
+
+	public JTFile getFile()
+	{
+		return file;
 	}
 
 }

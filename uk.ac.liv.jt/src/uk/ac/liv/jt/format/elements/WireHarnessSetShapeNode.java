@@ -27,6 +27,7 @@
  ******************************************************************************/
 package uk.ac.liv.jt.format.elements;
 
-public class WireHarnessSetShapeNode extends BaseShapeNodeElement {
+public class WireHarnessSetShapeNode extends BaseShapeNodeElement
+{
 
 }

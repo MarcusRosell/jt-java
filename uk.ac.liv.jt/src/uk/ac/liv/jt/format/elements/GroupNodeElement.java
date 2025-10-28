@@ -29,6 +29,8 @@ package uk.ac.liv.jt.format.elements;
 
 import java.io.IOException;
 
+import uk.ac.liv.jt.internal.BundleAccessor;
+
 /** 
  * 
  * Nodes of this types can have Children so are proper graph nodes
@@ -45,6 +47,9 @@ public class GroupNodeElement extends BaseNodeElement
 	public void read() throws IOException
 	{
 		super.read();
+
+		// TODO: The call to super should already have read the version number. This looks wrong
+		BundleAccessor.getLogger().warn( "MR: The code here looks a bit wrong. super.read() is called but we still read version number here?" ); //$NON-NLS-1$
 
 		short versionNumber = -1;
 		if ( this.reader.MAJOR_VERSION >= 9 ) {

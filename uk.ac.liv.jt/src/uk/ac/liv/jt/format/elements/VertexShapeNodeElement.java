@@ -31,16 +31,17 @@ import java.io.IOException;
 
 import uk.ac.liv.jt.format.JTQuantizationParam;
 
-public class VertexShapeNodeElement extends BaseShapeNodeElement {
+public class VertexShapeNodeElement extends BaseShapeNodeElement
+{
+	private int textureBinding;
+	private int colorBinding;
+	private int normalBinding;
+	private JTQuantizationParam quantParam;
 
-    public int textureBinding;
-    public int colorBinding;
-    public int normalBinding;
-    public JTQuantizationParam quantParam;
-
-    @Override
-    public void read() throws IOException {
-        super.read();
+	@Override
+	public void read() throws IOException
+	{
+		super.read();
 
 		this.normalBinding = this.reader.readI32();
 		this.textureBinding = this.reader.readI32();
@@ -48,7 +49,26 @@ public class VertexShapeNodeElement extends BaseShapeNodeElement {
 
 		this.quantParam = new JTQuantizationParam( this.reader );
 
-		this.quantParam.read();
-    }
+		this.getQuantParam().read();
+	}
 
+	public int getTextureBinding()
+	{
+		return this.textureBinding;
+	}
+
+	public JTQuantizationParam getQuantParam()
+	{
+		return this.quantParam;
+	}
+
+	public int getNormalBinding()
+	{
+		return this.normalBinding;
+	}
+
+	public int getColorBinding()
+	{
+		return this.colorBinding;
+	}
 }

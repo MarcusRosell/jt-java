@@ -37,7 +37,6 @@ public class PartNodeElement extends MetaDataNodeElement
 	@Override
 	public void read() throws IOException
 	{
-
 		super.read();
 
 		this.versionNumber = this.reader.readI16();

@@ -57,7 +57,6 @@ import uk.ac.liv.jt.types.GUID;
  */
 public class LSGSegment extends JTSegment
 {
-
 	/** the Graph structure holding the LSG representation */
 	Map<BaseNodeElement, List<BaseNodeElement>> graph;
 
@@ -219,7 +218,7 @@ public class LSGSegment extends JTSegment
 	/** returns the JTSegment for  GUID */
 	public JTSegment getSegment( GUID segmentid )
 	{
-		return this.file.getSegment( segmentid );
+		return this.getFile().getSegment( segmentid );
 	}
 
 	/** Method to render the graph to a graph diagram, for debugging*/

@@ -558,7 +558,7 @@ public class ByteReader
 
 	public String readString( int len ) throws IOException
 	{
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for ( int i = 0; i < len; i++ ) {
 			int c = get();
 			sb.append( (char)c );

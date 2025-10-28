@@ -31,8 +31,7 @@ import java.io.IOException;
 
 public class StringPropertyAtomElement extends BasePropertyAtomData
 {
-
-	public String value;
+	private String value;
 
 	@Override
 	public void read() throws IOException
@@ -57,5 +56,15 @@ public class StringPropertyAtomElement extends BasePropertyAtomData
 	public String toString()
 	{
 		return "" + this.value; //$NON-NLS-1$
+	}
+
+	public String getValue()
+	{
+		return this.value;
+	}
+
+	public void setValue( String value )
+	{
+		this.value = value;
 	}
 }

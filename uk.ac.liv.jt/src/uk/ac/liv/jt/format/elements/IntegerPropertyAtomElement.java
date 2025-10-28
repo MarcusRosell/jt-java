@@ -30,18 +30,28 @@ package uk.ac.liv.jt.format.elements;
 import java.io.IOException;
 
 public class IntegerPropertyAtomElement extends BasePropertyAtomData {
-    public int value;
+    private int value;
 
     @Override
     public void read() throws IOException {
         super.read();
 
-		this.value = this.reader.readI32();
-		this.ovalue = this.value;
+		this.setValue( this.reader.readI32() );
+		this.ovalue = this.getValue();
     }
 
     @Override
     public String toString() {
-		return "" + this.value; //$NON-NLS-1$
+		return "" + this.getValue(); //$NON-NLS-1$
     }
+
+	public int getValue()
+	{
+		return this.value;
+	}
+
+	public void setValue( int value )
+	{
+		this.value = value;
+	}
 }

@@ -31,7 +31,7 @@ import java.io.IOException;
 
 public class FloatingPointPropertyAtomElement extends BasePropertyAtomData
 {
-	public float value;
+	private float value;
 
 	@Override
 	public void read() throws IOException
@@ -56,4 +56,15 @@ public class FloatingPointPropertyAtomElement extends BasePropertyAtomData
 	{
 		return "" + this.value; //$NON-NLS-1$
 	}
+
+	public float getValue()
+	{
+		return this.value;
+	}
+
+	public void setValue( float value )
+	{
+		this.value = value;
+	}
+
 }

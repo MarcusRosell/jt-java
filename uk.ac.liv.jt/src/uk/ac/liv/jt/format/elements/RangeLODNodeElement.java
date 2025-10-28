@@ -31,17 +31,28 @@ import java.io.IOException;
 
 import uk.ac.liv.jt.types.CoordF32;
 
-public class RangeLODNodeElement extends LODNodeElement {
+public class RangeLODNodeElement extends LODNodeElement
+{
+	private float[] rangeLimits;
+	private CoordF32 center;
 
-    public float[] rangeLimits;
-    public CoordF32 center;
+	@Override
+	public void read() throws IOException
+	{
 
-    @Override
-    public void read() throws IOException {
-
-        super.read();
+		super.read();
 
 		this.rangeLimits = this.reader.readVecF32();
 		this.center = this.reader.readCoordF32();
-    }
+	}
+
+	public CoordF32 getCenter()
+	{
+		return this.center;
+	}
+
+	public float[] getRangeLimits()
+	{
+		return this.rangeLimits;
+	}
 }

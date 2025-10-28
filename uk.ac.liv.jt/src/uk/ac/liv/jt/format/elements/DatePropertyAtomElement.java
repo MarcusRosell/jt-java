@@ -39,7 +39,7 @@ import java.util.TimeZone;
  */
 public class DatePropertyAtomElement extends BasePropertyAtomData
 {
-	public Date date;
+	private Date date;
 
 	@Override
 	public void read() throws IOException
@@ -65,5 +65,15 @@ public class DatePropertyAtomElement extends BasePropertyAtomData
 	public String toString()
 	{
 		return this.date.toString();
+	}
+
+	public Date getDate()
+	{
+		return this.date;
+	}
+
+	public void setDate( Date value )
+	{
+		this.date = value;
 	}
 }

@@ -38,7 +38,7 @@ import uk.ac.liv.jt.internal.BundleAccessor;
 
 public class PropertyProxyMetaDataElement extends JTElement
 {
-	public Map<String, BasePropertyAtomData> properties;
+	private Map<String, BasePropertyAtomData> properties;
 
 	@Override
 	public void read() throws IOException
@@ -55,15 +55,15 @@ public class PropertyProxyMetaDataElement extends JTElement
 					break;
 				case 1:
 					d = new StringPropertyAtomElement();
-					((StringPropertyAtomElement)d).value = this.reader.readMbString();
+					((StringPropertyAtomElement)d).setValue( this.reader.readMbString() );
 					break;
 				case 2:
 					d = new IntegerPropertyAtomElement();
-					((IntegerPropertyAtomElement)d).value = this.reader.readI32();
+					((IntegerPropertyAtomElement)d).setValue( this.reader.readI32() );
 					break;
 				case 3:
 					d = new FloatingPointPropertyAtomElement();
-					((FloatingPointPropertyAtomElement)d).value = this.reader.readF32();
+					((FloatingPointPropertyAtomElement)d).setValue( this.reader.readF32() );
 					break;
 				case 4:
 					d = new DatePropertyAtomElement();
@@ -79,7 +79,7 @@ public class PropertyProxyMetaDataElement extends JTElement
 					// lacking better information
 					Calendar c = Calendar.getInstance( TimeZone.getTimeZone( "GMT" ) );
 					c.set( y, month, da, h, minute, s );
-					((DatePropertyAtomElement)d).date = c.getTime();
+					((DatePropertyAtomElement)d).setDate( c.getTime() );
 					break;
 				default:
 					d = null;
@@ -88,7 +88,11 @@ public class PropertyProxyMetaDataElement extends JTElement
 			}
 			this.properties.put( key, d );
 			//System.out.println(key + " = " + d);
-
 		}
+	}
+
+	public BasePropertyAtomData getProperty( String key )
+	{
+		return this.properties.get( key );
 	}
 }

@@ -35,10 +35,12 @@ import uk.ac.liv.jt.internal.BundleAccessor;
  * @author fabio
  *
  */
-public class JTBRepSegment extends JTSegment {
-    @Override
-    public void read() throws java.io.IOException {
-        super.read();
+public class JTBRepSegment extends JTSegment
+{
+	@Override
+	public void read() throws java.io.IOException
+	{
+		super.read();
 		BundleAccessor.getLogger().info( "No support for {}", getClass().getSimpleName() ); //$NON-NLS-1$
 	}
 }

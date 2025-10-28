@@ -35,13 +35,13 @@ import uk.ac.liv.jt.internal.BundleAccessor;
  * @author fabio
  *
  */
-public class ShapeSegment extends JTSegment {
-    
-    
-    //public TriStripSetShapeLODElement lod;
-    @Override
-    public void read() throws java.io.IOException {
-        super.read();
+public class ShapeSegment extends JTSegment
+{
+	//public TriStripSetShapeLODElement lod;
+	@Override
+	public void read() throws java.io.IOException
+	{
+		super.read();
 //        JTElement element2 = JTElement.createJTElement(reader);
 //        element2.read(); 
 //        if (element2 instanceof TriStripSetShapeLODElement) {
@@ -51,6 +51,6 @@ public class ShapeSegment extends JTSegment {
 //        else 
 
 		BundleAccessor.getLogger().info( "TODO, implement support for {}", getClass().getSimpleName() ); //$NON-NLS-1$
-    }
+	}
 
 }

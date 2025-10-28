@@ -59,7 +59,7 @@ public class TriStripSetShapeNodeElement extends VertexShapeNodeElement
 		LateLoadedPropertyAtomElement l = null;
 		for ( BasePropertyAtomData p[] : this.properties ) {
 			if ( p[1] instanceof LateLoadedPropertyAtomElement llpae && p[0] instanceof StringPropertyAtomElement s ) {
-				if ( s.value.equals( "JT_LLPROP_SHAPEIMPL" ) ) { //$NON-NLS-1$
+				if ( s.getValue().equals( "JT_LLPROP_SHAPEIMPL" ) ) { //$NON-NLS-1$
 					l = llpae;
 				}
 			}

@@ -45,22 +45,21 @@ import uk.ac.liv.jt.types.Vec3D;
   p.120 */
 public class TriStripSetShapeLODElement extends ShapeLODElement
 {
-
-	public int[] vertexDataIndices;
+	private int[] vertexDataIndices;
 	/** Primitive List Indices is a vector of indices into the 
 	 uncompressed Raw Vertex Data marking the start/beginning of 
 	 primitives. */
-	public int[] primitiveListIndices;
-	public QuantizedVertexCoordArray quantVertexCoord;
-	public QuantizedVertexNormalArray quantVertexNorm;
+	private int[] primitiveListIndices;
+	private QuantizedVertexCoordArray quantVertexCoord;
+	private QuantizedVertexNormalArray quantVertexNorm;
 
-	public double[] vertex;
-	public double[] normal;
+	private double[] vertex;
+	private double[] normal;
 
 	/* Normals for the vertices */
-	public Vec3D[] normals;
+	private Vec3D[] normals;
 	private JTQuantizationParam quantParam;
-	public boolean uncompressed;
+	private boolean uncompressed;
 
 //    public static boolean testDisplay = false;
 	public static boolean testDisplayNormals = false;
@@ -98,7 +97,7 @@ public class TriStripSetShapeLODElement extends ShapeLODElement
 		int bindingAttributes = getReader().readI32();
 
 		this.quantParam = new JTQuantizationParam( getReader() );
-		this.quantParam.read();
+		this.getQuantParam().read();
 
 		if ( DebugInfo.debugMode ) {
 			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
@@ -162,10 +161,10 @@ public class TriStripSetShapeLODElement extends ShapeLODElement
 
 		if ( DebugInfo.debugMode ) {
 			BundleAccessor.getLogger().info( "" ); //$NON-NLS-1$
-			BundleAccessor.getLogger().info( " => Primitive List Indices ({})", this.primitiveListIndices.length ); //$NON-NLS-1$
+			BundleAccessor.getLogger().info( " => Primitive List Indices ({})", this.getPrimitiveListIndices().length ); //$NON-NLS-1$
 
 			StringBuilder indices = new StringBuilder();
-			for ( int primitiveListIndice : this.primitiveListIndices ) {
+			for ( int primitiveListIndice : this.getPrimitiveListIndices() ) {
 				indices.append( primitiveListIndice ).append( " " ); //$NON-NLS-1$
 			}
 			BundleAccessor.getLogger().info( "{}", indices.toString() ); //$NON-NLS-1$
@@ -206,8 +205,8 @@ public class TriStripSetShapeLODElement extends ShapeLODElement
 			len = Math.abs( compressedDataSize );
 		}
 
-		int numFaces = this.primitiveListIndices.length - 1;
-		int numVertices = this.primitiveListIndices[numFaces];
+		int numFaces = this.getPrimitiveListIndices().length - 1;
+		int numVertices = this.getPrimitiveListIndices()[numFaces];
 //        System.out.println(numFaces);
 //        System.out.println(numVertices);
 
@@ -225,14 +224,59 @@ public class TriStripSetShapeLODElement extends ShapeLODElement
 				this.reader.readF32();
 			}
 			if ( normalBinding == 1 ) {
-				this.normal[j + 0] = this.reader.readF32();
-				this.normal[j + 1] = this.reader.readF32();
-				this.normal[j + 2] = this.reader.readF32();
+				this.getNormal()[j + 0] = this.reader.readF32();
+				this.getNormal()[j + 1] = this.reader.readF32();
+				this.getNormal()[j + 2] = this.reader.readF32();
 
 			}
-			this.vertex[j + 0] = this.reader.readF32();
-			this.vertex[j + 1] = this.reader.readF32();
-			this.vertex[j + 2] = this.reader.readF32();
+			this.getVertex()[j + 0] = this.reader.readF32();
+			this.getVertex()[j + 1] = this.reader.readF32();
+			this.getVertex()[j + 2] = this.reader.readF32();
 		}
+	}
+
+	public boolean isUncompressed()
+	{
+		return this.uncompressed;
+	}
+
+	private JTQuantizationParam getQuantParam()
+	{
+		return this.quantParam;
+	}
+
+	public Vec3D[] getNormals()
+	{
+		return this.normals;
+	}
+
+	public double[] getNormal()
+	{
+		return this.normal;
+	}
+
+	public double[] getVertex()
+	{
+		return this.vertex;
+	}
+
+	public QuantizedVertexNormalArray getQuantVertexNorm()
+	{
+		return this.quantVertexNorm;
+	}
+
+	public QuantizedVertexCoordArray getQuantVertexCoord()
+	{
+		return this.quantVertexCoord;
+	}
+
+	public int[] getPrimitiveListIndices()
+	{
+		return this.primitiveListIndices;
+	}
+
+	public int[] getVertexDataIndices()
+	{
+		return this.vertexDataIndices;
 	}
 }

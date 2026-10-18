@@ -12,6 +12,7 @@ Export-Package: uk.ac.liv.jt.codec,
 Bundle-Vendor: University of Liverpool
 Automatic-Module-Name: uk.ac.liv.jt
 Bundle-RequiredExecutionEnvironment: JavaSE-21
-Require-Bundle: org.eclipse.osgi
+Require-Bundle: org.eclipse.osgi,
+ org.tukaani.xz;bundle-version="1.12.0"
 Import-Package: org.slf4j;version="[1.7.0,2.0.0)",
- org.tukaani.xz;resolution:=optional
+ org.tukaani.xz;version="1.10.0";resolution:=optional

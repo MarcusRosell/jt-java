@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.liverpool</groupId>
-	<artifactId>JTViewer</artifactId>
-	<version>0.7.2</version>
+	<artifactId>JT-Parser</artifactId>
+	<version>0.7.5</version>
 	<name>The JT format parser</name>
 	<developers>
 
@@ -14,6 +14,10 @@
 		<developer>
 			<name>Jerome Fuselier</name>
 			<email>jerome.fuselier@gmail.com</email>
+		</developer>
+		<developer>
+			<name>Marcus Rosell</name>
+			<email>marcus.rosell@solme.se</email>
 		</developer>
 
 	</developers>
@@ -34,8 +38,6 @@ This library curerntly parses JT files including faceted data, the Logocal Scene
 					<target>1.5</target>
 				</configuration>
 			</plugin>
-
-
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -60,19 +62,16 @@ This library curerntly parses JT files including faceted data, the Logocal Scene
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>src/main/assembly/jtv.xml</descriptor>
+								<descriptor>assembly/jtv.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
 				</executions>
 				<configuration>
 					<finalName>JT Parser</finalName>
-
 				</configuration>
 			</plugin>
 		</plugins>
-
-
 	</build>
 
 	<repositories>
@@ -84,8 +83,7 @@ This library curerntly parses JT files including faceted data, the Logocal Scene
 
 	</repositories>
 
-
-	</dependencies>
+	<dependencies>
 		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>

@@ -46,12 +46,8 @@ public class InstanceNodeElement extends BaseNodeElement
 	{
 		super.read();
 
-		short versionNumber = -1;
 		if ( this.reader.MAJOR_VERSION >= 9 ) {
-			versionNumber = this.reader.readI16();
-			if ( versionNumber != 1 ) {
-				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
-			}
+			this.reader.readVersionNumber();
 		}
 
 		this.instancedNodeObjectId = this.reader.readI32();

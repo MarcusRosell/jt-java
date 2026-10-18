@@ -37,11 +37,24 @@ public class VertexShapeNodeElement extends BaseShapeNodeElement
 	private int colorBinding;
 	private int normalBinding;
 	private JTQuantizationParam quantParam;
+	private long vertexBinding;
 
 	@Override
 	public void read() throws IOException
 	{
 		super.read();
+
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			// From JT 9 all the bindings are encoded in a single U64
+			int versionNumber = this.reader.readVersionNumber();
+			this.vertexBinding = this.reader.readI64();
+			if ( versionNumber != 1 ) {
+				this.quantParam = new JTQuantizationParam( this.reader );
+				this.quantParam.read();
+				this.vertexBinding = this.reader.readI64();
+			}
+			return;
+		}
 
 		this.normalBinding = this.reader.readI32();
 		this.textureBinding = this.reader.readI32();
@@ -50,6 +63,14 @@ public class VertexShapeNodeElement extends BaseShapeNodeElement
 		this.quantParam = new JTQuantizationParam( this.reader );
 
 		this.getQuantParam().read();
+	}
+
+	/**
+	 * @return the vertex bindings (from JT 9), with the normal, texture coordinate, color and flag bindings
+	 */
+	public long getVertexBinding()
+	{
+		return this.vertexBinding;
 	}
 
 	public int getTextureBinding()

@@ -39,7 +39,7 @@ public class PartNodeElement extends MetaDataNodeElement
 	{
 		super.read();
 
-		this.versionNumber = this.reader.readI16();
+		this.versionNumber = (short)this.reader.readVersionNumber();
 		this.reserved = this.reader.readI32();
 	}
 }

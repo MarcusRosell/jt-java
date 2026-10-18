@@ -38,13 +38,8 @@ public class FloatingPointPropertyAtomElement extends BasePropertyAtomData
 	{
 		super.read();
 
-		int versionNumber = -1;
 		if ( getReader().MAJOR_VERSION >= 9 ) {
-			this.reader.readBytes( 2 );
-			versionNumber = this.reader.readI16();
-			if ( versionNumber != 1 ) {
-				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
-			}
+			this.reader.readVersionNumber();
 		}
 
 		this.value = this.reader.readF32();

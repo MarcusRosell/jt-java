@@ -35,6 +35,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import uk.ac.liv.jt.debug.DebugInfo;
 import uk.ac.liv.jt.internal.BundleAccessor;
@@ -121,8 +123,7 @@ public class JTFile
 	{
 		this.version = this.reader.readString( 80 );
 
-		// Quick and dirty
-		this.reader.MAJOR_VERSION = Byte.parseByte( this.version.substring( 8, 9 ) );
+		this.reader.MAJOR_VERSION = parseMajorVersion( this.version );
 
 		int a = this.reader.readUChar();
 		if ( a == 0 ) {
@@ -135,7 +136,8 @@ public class JTFile
 			throw new IOException( "IN JT header: byteorder has non valid value: " + a ); //$NON-NLS-1$
 		}
 		this.fileAttribute = this.reader.readI32();
-		this.tocOffset = this.reader.readI32();
+		// from JT 10 the TOC offset is an U64
+		this.tocOffset = this.reader.MAJOR_VERSION >= 10 ? toInt( this.reader.readI64() ) : this.reader.readI32();
 		this.lsgSegmentID = this.reader.readGUID();
 
 		if ( DebugInfo.debugMode ) {
@@ -182,11 +184,32 @@ public class JTFile
 	private JTSegment readTOCEntry() throws IOException
 	{
 		GUID segmentID = this.reader.readGUID();
-		int segmentOffset = this.reader.readI32();
+		// from JT 10 the segment offset is an U64
+		int segmentOffset = this.reader.MAJOR_VERSION >= 10 ? toInt( this.reader.readI64() ) : this.reader.readI32();
 		int segmentLength = this.reader.readI32();
 		long segmentAttributes = this.reader.readU32();
 
 		return JTSegment.createJTSegment( this.reader, segmentID, segmentOffset, segmentLength, segmentAttributes, this );
+	}
+
+	/**
+	 * Extracts the major version number from the version string of the header, e.g. 10 for "Version 10.3 JT".
+	 */
+	private static byte parseMajorVersion( String version ) throws IOException
+	{
+		Matcher m = Pattern.compile( "Version\\s+(\\d+)\\." ).matcher( version ); //$NON-NLS-1$
+		if ( !m.find() ) {
+			throw new IOException( "Invalid JT version string: " + version.trim() ); //$NON-NLS-1$
+		}
+		return Byte.parseByte( m.group( 1 ) );
+	}
+
+	private static int toInt( long offset ) throws IOException
+	{
+		if ( offset < 0 || offset > Integer.MAX_VALUE ) {
+			throw new IOException( "File offset too large: " + offset ); //$NON-NLS-1$
+		}
+		return (int)offset;
 	}
 
 	/** Convenience methods, reads the header and Table of Contents, 

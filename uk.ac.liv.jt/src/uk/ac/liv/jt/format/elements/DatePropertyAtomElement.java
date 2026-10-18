@@ -45,6 +45,9 @@ public class DatePropertyAtomElement extends BasePropertyAtomData
 	public void read() throws IOException
 	{
 		super.read();
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			this.reader.readVersionNumber();
+		}
 		short y = this.reader.readI16();
 		short month = this.reader.readI16();
 		short d = this.reader.readI16();

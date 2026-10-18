@@ -42,6 +42,9 @@ public class RangeLODNodeElement extends LODNodeElement
 
 		super.read();
 
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			this.reader.readVersionNumber();
+		}
 		this.rangeLimits = this.reader.readVecF32();
 		this.center = this.reader.readCoordF32();
 	}

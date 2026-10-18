@@ -105,6 +105,8 @@ public class LSGSegment extends JTSegment
 			// *** SEE FIGURE 9: the ZLIB header is applied ONLY to the first
 			// element in the Segment.
 			element2.read();
+			// skip the fields not interpreted, if any
+			element2.skipRemaining();
 			// End of elements
 			if ( element2.id.equals( GUID.END_OF_ELEMENTS ) ) {
 				break;
@@ -135,6 +137,7 @@ public class LSGSegment extends JTSegment
 			// element in the Segment.
 
 			element2.read();
+			element2.skipRemaining();
 
 			if ( element2.id.equals( GUID.END_OF_ELEMENTS ) ) {
 				break;

@@ -36,9 +36,15 @@ public class LODNodeElement extends GroupNodeElement {
 
         super.read();
 
-        // reserved
-		this.reader.readVecF32();
-        // reserved
-		this.reader.readI32();
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			this.reader.readVersionNumber();
+		}
+		// the reserved fields are no longer present from JT 10
+		if ( this.reader.MAJOR_VERSION < 10 ) {
+	        // reserved
+			this.reader.readVecF32();
+	        // reserved
+			this.reader.readI32();
+		}
     }
 }

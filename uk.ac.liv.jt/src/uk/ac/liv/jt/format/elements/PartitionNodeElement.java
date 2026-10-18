@@ -103,6 +103,11 @@ public class PartitionNodeElement extends GroupNodeElement
 	{
 		super.read();
 
+		// Partition Node Data version number, from JT 10
+		if ( this.reader.MAJOR_VERSION >= 10 ) {
+			this.reader.readVersionNumber();
+		}
+
 		this.partitionFlags = getReader().readI32();
 
 		this.filename = getReader().readMbString();
@@ -121,8 +126,14 @@ public class PartitionNodeElement extends GroupNodeElement
 		this.polygonCountRange = this.reader.readRange();
 
 		if ( (this.partitionFlags & 0x00000001) != 0 ) {
-			this.untransformedBox = getReader().readBBoxF32();
-			//            System.out.println("Untransformed Box: " + untransformedBox);
+			if ( getRemainingBytes() >= 24 ) {
+				this.untransformedBox = getReader().readBBoxF32();
+				//            System.out.println("Untransformed Box: " + untransformedBox);
+			}
+			else {
+				// JT 10 files may only store a single box, the untransformed one
+				this.untransformedBox = this.reservedField;
+			}
 		}
 
 		//        System.out.println("Partition Flags: " + partitionFlags);

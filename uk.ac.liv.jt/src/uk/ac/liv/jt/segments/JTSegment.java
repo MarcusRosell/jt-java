@@ -130,7 +130,10 @@ public class JTSegment
 				break;
 
 			default:
-				throw new IOException( "Invalid segment Type" ); //$NON-NLS-1$
+				// segment types not interpreted by this parser (e.g. the ones added in JT 10)
+				BundleAccessor.getLogger().debug( "Unsupported segment type {}", segType ); //$NON-NLS-1$
+				t = new JTSegment();
+				break;
 		}
 
 		t.reader = reader;
@@ -165,6 +168,10 @@ public class JTSegment
 			readHeaderZLIB();
 			if ( this.getCompressionFlag() == 2 && this.compressionAlgorithm == 2 ) {
 				this.reader.setInflating( true, this.compressedDataLength );
+			}
+			// LZMA compression, from JT 10
+			else if ( this.getCompressionFlag() == 3 && this.compressionAlgorithm == 3 ) {
+				this.reader.setLzmaInflating( this.compressedDataLength );
 			}
 		}
 	}

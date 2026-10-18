@@ -61,12 +61,9 @@ public class BaseNodeElement extends JTNode
 //         System.out.println("Object ID: " + objectID + " class " +
 //         this.getClass().getSimpleName());
 
-		short versionNumber = -1;
+		// Base Node Data version number, from JT 9
 		if ( this.reader.MAJOR_VERSION >= 9 ) {
-			versionNumber = getReader().readI16();
-			if ( versionNumber != 1 ) {
-				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
-			}
+			getReader().readVersionNumber();
 		}
 
 		this.nodeFlags = getReader().readU32();

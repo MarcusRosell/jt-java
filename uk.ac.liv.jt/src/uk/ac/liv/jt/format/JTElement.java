@@ -122,7 +122,10 @@ public class JTElement {
     protected ByteReader reader;
 
     protected int length;
-    
+
+    /** read position of the reader at the end of the element */
+    protected long endPosition;
+
     public GUID id;
     
     protected int objectBaseType;
@@ -195,6 +198,7 @@ public class JTElement {
             throws IOException {
 
         /* read header */
+        long start = reader.getReadPosition();
         int length = reader.readI32();
         GUID id = reader.readGUID();
         int objectBaseType = 0;
@@ -218,8 +222,35 @@ public class JTElement {
         jt.setReader(reader);
         jt.id = id;
         jt.length = length;
+        jt.endPosition = start + 4 + length;
         jt.objectBaseType = objectBaseType;
         return jt;
+    }
+
+    /**
+     * Returns the number of bytes of this element that have not been read yet.
+     */
+    public long getRemainingBytes() {
+        return this.endPosition - this.reader.getReadPosition();
+    }
+
+    /**
+     * Skips the data of this element that has not been read, e.g. fields added
+     * by a newer version of the format than the one implemented, so that the
+     * reader is positioned on the next element.
+     *
+     * @throws IOException
+     *             if more data than the element length has been read
+     */
+    public void skipRemaining() throws IOException {
+        long remaining = getRemainingBytes();
+        if (remaining < 0) {
+            throw new IOException("Element " + getClass().getSimpleName() + " read " + (-remaining) + " bytes beyond its length"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+        if (remaining > 0) {
+            BundleAccessor.getLogger().debug( "Skipped {} unread bytes of {}", remaining, getClass().getSimpleName() ); //$NON-NLS-1$
+            this.reader.skip(remaining);
+        }
     }
 
     /**

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JT Parser
 Bundle-SymbolicName: uk.ac.liv.jt
-Bundle-Version: 0.7.3.qualifier
+Bundle-Version: 0.7.5.qualifier
 Export-Package: uk.ac.liv.jt.codec,
  uk.ac.liv.jt.debug,
  uk.ac.liv.jt.format,
@@ -13,4 +13,5 @@ Bundle-Vendor: University of Liverpool
 Automatic-Module-Name: uk.ac.liv.jt
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.eclipse.osgi
-Import-Package: org.slf4j;version="[1.7.0,2.0.0)"
+Import-Package: org.slf4j;version="[1.7.0,2.0.0)",
+ org.tukaani.xz;resolution:=optional

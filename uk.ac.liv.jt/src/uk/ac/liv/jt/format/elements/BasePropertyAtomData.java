@@ -50,6 +50,9 @@ public class BasePropertyAtomData extends JTNode
 	{
 		super.read();
 		// System.out.println("obj ID: " + objectID);
+		if ( getReader().MAJOR_VERSION >= 9 ) {
+			getReader().readVersionNumber();
+		}
 		this.stateFlags = getReader().readU32();
 	}
 }

@@ -41,6 +41,7 @@ import java.util.zip.DataFormatException;
 import uk.ac.liv.jt.codec.IInflater;
 import uk.ac.liv.jt.codec.IInflaterFactory;
 import uk.ac.liv.jt.codec.InflaterFactory;
+import uk.ac.liv.jt.codec.LzmaInflater;
 import uk.ac.liv.jt.types.BBoxF32;
 import uk.ac.liv.jt.types.CoordF32;
 import uk.ac.liv.jt.types.GUID;
@@ -68,6 +69,9 @@ public class ByteReader
 
 	private boolean inflating;
 
+	/** maximal number of compressed bytes given at once to the inflater */
+	private int inputChunkSize = 5 * 1024;
+
 	public int compressedDataLength;
 
 	public int compressedDataLeft;
@@ -84,6 +88,7 @@ public class ByteReader
 
 	byte[] bitByteBuff = new byte[4];
 
+	/** major version of the JT file format (8, 9, 10...) */
 	public byte MAJOR_VERSION;
 
 	final protected static int[] BIT_MASK = new int[8];
@@ -352,28 +357,34 @@ public class ByteReader
 		if ( this.inf.finished() ) {
 			throw new IOException( "Inflated stream is finished" ); //$NON-NLS-1$
 		}
-		if ( this.inf.needsInput() ) {
-			if ( this.compressedDataLeft <= 0 ) {
-				throw new IOException( "Out of compressed data!" ); //$NON-NLS-1$
+		byte[] p = new byte[2048];
+		// inflate until n bytes are available (as far as the buffer allows) or the stream ends
+		do {
+			if ( this.inf.needsInput() ) {
+				if ( this.compressedDataLeft <= 0 ) {
+					throw new IOException( "Out of compressed data!" ); //$NON-NLS-1$
+				}
+				int size = Math.min( this.compressedDataLeft, this.inputChunkSize );
+				this.compressedDataLeft -= size;
+				byte[] tmp = new byte[size];
+				this.backBuffer.get( tmp );
+				this.inf.setInput( tmp );
 			}
-			int size = Math.min( this.compressedDataLeft, 5 * 1024 );
-			this.compressedDataLeft -= size;
-			byte[] tmp = new byte[size];
-			this.backBuffer.get( tmp );
-			this.inf.setInput( tmp );
-		}
 
-		try {
-			this.inflated.compact();
-			byte[] p = new byte[2048];
-			int c = this.inf.inflate( p );
-			this.inflated.put( p, 0, c );
-			this.inflated.flip();
+			try {
+				this.inflated.compact();
+				int c = this.inf.inflate( p );
+				this.inflated.put( p, 0, c );
+				this.inflated.flip();
+				if ( c == 0 && !this.inf.needsInput() && !this.inf.finished() ) {
+					throw new IOException( "Inflater does not produce any data" ); //$NON-NLS-1$
+				}
+			}
+			catch ( DataFormatException e ) {
+				throw new IOException( e );
+			}
 		}
-		catch ( DataFormatException e ) {
-			throw new IOException( e );
-		}
-
+		while ( this.inflated.remaining() < n && !this.inf.finished() && this.inflated.capacity() - this.inflated.remaining() >= p.length );
 	}
 
 	private int getInt() throws IOException
@@ -696,28 +707,35 @@ public class ByteReader
 
 	private void setInflating( boolean inflating )
 	{
-		this.inflating = inflating;
 		if ( inflating ) {
-
 			IInflaterFactory factory = InflaterFactory.getInflaterFactoryInstance();
-			this.inf = factory.createInflater();
-			this.inf.init( false );
+			startInflating( factory.createInflater(), 5 * 1024 );
+		}
+		else {
+			this.inflating = false;
+			if ( this.inf != null ) {
+				this.inf.end();
+				this.inf = null;
+				this.inflated = null;
+			}
+		}
+	}
 
-			this.inflated = java.nio.ByteBuffer.allocate( 1024 * 30 );
-			this.inflated.order( this.backBuffer.order() );
-			this.inflated.flip();
-			// System.out.println("S CDL " + compressedDataLeft);
-		}
-		else if ( this.inf != null ) {
-			// System.out.println("E CDL " + compressedDataLeft + " = " +
-			// (compressedDataLength - inf.getTotalIn()));
-			// System.out.println("E Uncompressed data len " + inf.getTotalOut()
-			// + " finished? " + inf.finished());
-			this.inf.end();
-			this.inf = null;
-			this.inflated = null;
-			;
-		}
+	/**
+	 * Starts decompressing the data using the given inflater.
+	 *
+	 * @param inflater the inflater to use
+	 * @param chunkSize the maximal number of compressed bytes given at once to the inflater
+	 */
+	private void startInflating( IInflater inflater, int chunkSize )
+	{
+		this.inflating = true;
+		this.inf = inflater;
+		this.inf.init( false );
+		this.inputChunkSize = chunkSize;
+		this.inflated = java.nio.ByteBuffer.allocate( 1024 * 30 );
+		this.inflated.order( this.backBuffer.order() );
+		this.inflated.flip();
 	}
 
 	public float[] readVecF32() throws IOException
@@ -779,9 +797,72 @@ public class ByteReader
 		setInflating( b );
 	}
 
+	/**
+	 * Enables the LZMA decompression of the data (compression algorithm 3, used from JT 10)
+	 *
+	 * @param compressedDataLength
+	 */
+	public void setLzmaInflating( int compressedDataLength ) throws IOException
+	{
+		IInflater inflater;
+		try {
+			inflater = new LzmaInflater();
+		}
+		catch ( LinkageError e ) {
+			throw new IOException( "LZMA compressed JT data requires the org.tukaani.xz library", e ); //$NON-NLS-1$
+		}
+		this.compressedDataLength = compressedDataLength;
+		this.compressedDataLeft = compressedDataLength;
+		this.uncompressedRead = 0;
+		// the XZ stream is decoded from a single input array
+		startInflating( inflater, Integer.MAX_VALUE );
+	}
+
 	public long position()
 	{
 		return this.backBuffer.position();
+	}
+
+	/**
+	 * Returns the reading position in the current data stream: the number of uncompressed bytes
+	 * read when inflating, the position in the file otherwise.
+	 */
+	public long getReadPosition()
+	{
+		return this.inflating ? this.uncompressedRead : this.backBuffer.position();
+	}
+
+	/**
+	 * Skips n bytes of the current data stream
+	 *
+	 * @param n number of bytes to skip
+	 * @throws IOException
+	 */
+	public void skip( long n ) throws IOException
+	{
+		if ( !this.inflating ) {
+			this.backBuffer.position( (int)(this.backBuffer.position() + n) );
+			return;
+		}
+		while ( n > 0 ) {
+			int len = (int)Math.min( n, 64 * 1024 );
+			get( new byte[len] );
+			n -= len;
+		}
+	}
+
+	/**
+	 * Reads a Version Number field: an I16 up to JT 9.x, an U8 from JT 10.
+	 *
+	 * @return the version number
+	 * @throws IOException
+	 */
+	public int readVersionNumber() throws IOException
+	{
+		if ( this.MAJOR_VERSION >= 10 ) {
+			return readU8();
+		}
+		return readI16();
 	}
 
 	public int getNbBitsLeft()

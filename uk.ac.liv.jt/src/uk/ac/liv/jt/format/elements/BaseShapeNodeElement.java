@@ -48,7 +48,13 @@ public class BaseShapeNodeElement extends BaseNodeElement {
     public void read() throws IOException {
         super.read();
 
-		this.transformedBBox = this.reader.readBBoxF32();
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			this.reader.readVersionNumber();
+		}
+		// the transformed box (a reserved field in JT 9) is no longer present from JT 10
+		if ( this.reader.MAJOR_VERSION < 10 ) {
+			this.transformedBBox = this.reader.readBBoxF32();
+		}
 		this.untransformedBBox = this.reader.readBBoxF32();
 		this.area = this.reader.readF32();
 		this.vertexRange = this.reader.readRange();

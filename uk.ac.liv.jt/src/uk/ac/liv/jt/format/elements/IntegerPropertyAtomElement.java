@@ -36,6 +36,9 @@ public class IntegerPropertyAtomElement extends BasePropertyAtomData {
     public void read() throws IOException {
         super.read();
 
+		if ( this.reader.MAJOR_VERSION >= 9 ) {
+			this.reader.readVersionNumber();
+		}
 		this.setValue( this.reader.readI32() );
 		this.ovalue = this.getValue();
     }

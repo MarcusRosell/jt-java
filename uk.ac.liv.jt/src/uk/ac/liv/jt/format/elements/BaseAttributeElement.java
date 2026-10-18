@@ -39,6 +39,8 @@ public class BaseAttributeElement extends JTNode
 {
 
 	public long fieldInhibitFlags;
+	/** from JT 10 */
+	public long fieldFinalFlags;
 	public int stateFlags;
 
 	@Override
@@ -46,18 +48,16 @@ public class BaseAttributeElement extends JTNode
 	{
 		super.read();
 
-		short versionNumber = -1;
 		if ( this.reader.MAJOR_VERSION >= 9 ) {
-			versionNumber = this.reader.readI16();
-			if ( versionNumber != 1 ) {
-				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
-			}
-			this.reader.readBytes( 2 );    // Skip 2 unknown bytes
+			this.reader.readVersionNumber();
 		}
 
 		this.stateFlags = this.reader.readU8();
 		this.fieldInhibitFlags = this.reader.readU32();
 		// System.out.println("Attribute ID: " + getObjectID());
+		if ( this.reader.MAJOR_VERSION >= 10 ) {
+			this.fieldFinalFlags = this.reader.readU32();
+		}
 
 	}
 

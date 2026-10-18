@@ -29,8 +29,6 @@ package uk.ac.liv.jt.format.elements;
 
 import java.io.IOException;
 
-import uk.ac.liv.jt.internal.BundleAccessor;
-
 /** 
  * 
  * Nodes of this types can have Children so are proper graph nodes
@@ -48,15 +46,9 @@ public class GroupNodeElement extends BaseNodeElement
 	{
 		super.read();
 
-		// TODO: The call to super should already have read the version number. This looks wrong
-		BundleAccessor.getLogger().warn( "MR: The code here looks a bit wrong. super.read() is called but we still read version number here?" ); //$NON-NLS-1$
-
-		short versionNumber = -1;
+		// From JT 9 each data collection (Base Node Data, Group Node Data...) has its own version number
 		if ( this.reader.MAJOR_VERSION >= 9 ) {
-			versionNumber = getReader().readI16();
-			if ( versionNumber != 1 ) {
-				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
-			}
+			getReader().readVersionNumber();
 		}
 
 		int childCount = this.reader.readI32();

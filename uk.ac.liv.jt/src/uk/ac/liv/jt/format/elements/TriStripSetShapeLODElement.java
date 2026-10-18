@@ -32,11 +32,15 @@ import java.io.IOException;
 import uk.ac.liv.jt.codec.Int32Compression;
 import uk.ac.liv.jt.codec.Predictors.PredictorType;
 import uk.ac.liv.jt.debug.DebugInfo;
+import uk.ac.liv.jt.format.ByteReader;
+import uk.ac.liv.jt.format.JTElement;
 import uk.ac.liv.jt.format.JTQuantizationParam;
 import uk.ac.liv.jt.format.LossyQuantizedRawVertexData;
 import uk.ac.liv.jt.format.QuantizedVertexCoordArray;
 import uk.ac.liv.jt.format.QuantizedVertexNormalArray;
+import uk.ac.liv.jt.format.TopoMeshCompressedData;
 import uk.ac.liv.jt.internal.BundleAccessor;
+import uk.ac.liv.jt.types.GUID;
 import uk.ac.liv.jt.types.Vec3D;
 
 /** A Tri-Strip Set Shape LOD Element contains the geometric shape 
@@ -67,6 +71,11 @@ public class TriStripSetShapeLODElement extends ShapeLODElement
 	@Override
 	public void read() throws IOException
 	{
+		if ( getReader().MAJOR_VERSION >= 9 ) {
+			readTopologicallyCompressedLOD();
+			return;
+		}
+
 		readVertexShapeLODData();
 
 		/* Version Number is the version identifier for this Tri-Strip Set 
@@ -75,6 +84,69 @@ public class TriStripSetShapeLODElement extends ShapeLODElement
 		int versionNumber = getReader().readI16();
 
 		readVertexBasedShapeCompressedRepData();
+	}
+
+	/**
+	 * Reads the JT 9 and later format: the triangles are stored as a topologically compressed mesh.
+	 * They are exported as strips of 3 vertices (one per triangle), with uncompressed vertices and normals.
+	 */
+	private void readTopologicallyCompressedLOD() throws IOException
+	{
+		ByteReader reader = getReader();
+		// Object ID of the element header, from JT 9
+		reader.readI32();
+		// Base Shape LOD Data
+		reader.readVersionNumber();
+		// Vertex Shape LOD Data
+		reader.readVersionNumber();
+		long vertexBindings = reader.readI64();
+		skipNestedElementHeader( reader );
+		// TopoMesh LOD Data
+		reader.readVersionNumber();
+		reader.readU32(); // vertex records object ID
+		// TopoMesh Topologically Compressed LOD Data
+		reader.readVersionNumber();
+		TopoMeshCompressedData data = new TopoMeshCompressedData( reader );
+		data.read();
+		// the version number of the Tri-Strip Set Shape LOD follows
+
+		if ( DebugInfo.debugMode ) {
+			BundleAccessor.getLogger().info( "Vertex bindings: {}, triangles: {}", Long.toHexString( vertexBindings ), data.getTriangleCount() ); //$NON-NLS-1$
+		}
+
+		int nTriangles = data.getTriangleCount();
+		this.primitiveListIndices = new int[nTriangles + 1];
+		for ( int i = 0; i <= nTriangles; i++ ) {
+			this.primitiveListIndices[i] = 3 * i;
+		}
+		this.vertex = data.getTriangleVertices();
+		this.normal = data.getTriangleNormals();
+		this.uncompressed = true;
+	}
+
+	/** Object type of the element wrapping the TopoMesh data in files written by newer JT 10 versions (e.g. JT 10.3) */
+	private static final GUID TOPO_MESH_ELEMENT_ID = GUID.fromString( "{f830a5ad-be4c-4fbc-9b-5f-b9-26-92-78-d2-e1}" ); //$NON-NLS-1$
+
+	/**
+	 * Newer JT 10 files (not documented by the JT 10.0 reference) store the TopoMesh data in a
+	 * nested element: its header (length, object type, base type, object ID) is skipped.
+	 */
+	private void skipNestedElementHeader( ByteReader reader ) throws IOException
+	{
+		if ( reader.MAJOR_VERSION < 10 || reader.isInflating() || getRemainingBytes() < JTElement.HEADER_LENGTH + 4 ) {
+			return;
+		}
+		long position = reader.position();
+		long remaining = getRemainingBytes();
+		int length = reader.readI32();
+		GUID id = reader.readGUID();
+		if ( id.equals( TOPO_MESH_ELEMENT_ID ) && length > 0 && length + 4 <= remaining ) {
+			reader.readU8(); // object base type
+			reader.readI32(); // object ID
+		}
+		else {
+			reader.position( (int)position );
+		}
 	}
 
 	/** Vertex Shape LOD Data collection contains the bindings and 

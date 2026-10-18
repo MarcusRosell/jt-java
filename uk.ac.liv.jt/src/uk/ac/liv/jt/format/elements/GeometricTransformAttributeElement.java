@@ -49,22 +49,22 @@ public class GeometricTransformAttributeElement extends BaseAttributeElement
 	{
 		super.read();
 
+		// From JT 9 the element has a version number, and the matrix values are stored as F64
+		boolean doublePrecision = this.reader.MAJOR_VERSION >= 9;
+		if ( doublePrecision ) {
+			this.reader.readVersionNumber();
+		}
+
 		int storeValueMask = this.reader.readU16();
 
 		int c = storeValueMask;
 		this.transform = new double[] { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0,
 				1 };
-		int readValues = 0;
 		for ( int i = 0; i < 16; i++ ) {
 			if ( (c & 0x8000) != 0 ) {
-				this.transform[i] = this.reader.readF32();
-				readValues++;
+				this.transform[i] = doublePrecision ? this.reader.readF64() : this.reader.readF32();
 			}
 			c = c << 1;
-		}
-
-		if ( this.reader.MAJOR_VERSION >= 9 ) {
-			this.reader.readBytes( readValues * 4 );
 		}
 		//System.out.println(this);
 	}

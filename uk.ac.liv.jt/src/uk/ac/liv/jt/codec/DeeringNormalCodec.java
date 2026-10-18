@@ -70,7 +70,16 @@ public class DeeringNormalCodec
 		// For sextants 1, 3, and 5, theta needs to be incremented
 		theta += (sextant & 1);
 
-		DeeringLookupEntry lookupEntry = lookupTable.lookupThetaPsi( theta, psi, this.numBits );
+		DeeringLookupEntry lookupEntry;
+		if ( lookupTable.numBitsPerAngle() >= this.numBits ) {
+			lookupEntry = lookupTable.lookupThetaPsi( theta, psi, this.numBits );
+		}
+		else {
+			// more bits than the lookup table supports (up to 13 from JT 9): compute directly
+			double fTheta = Math.asin( Math.tan( psiMax * (bitRange - theta) / fBitRange ) );
+			double fPsi = psiMax * (psi / fBitRange);
+			lookupEntry = new DeeringLookupEntry( Math.cos( fTheta ), Math.sin( fTheta ), Math.cos( fPsi ), Math.sin( fPsi ) );
+		}
 
 		double x, y, z;
 		double xx = x = lookupEntry.getCosTheta() * lookupEntry.getCosPsi();

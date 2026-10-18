@@ -43,7 +43,7 @@ public class MetaDataNodeElement extends GroupNodeElement
 	public void read() throws IOException
 	{
 		super.read();
-		this.versionNumber = this.reader.readI16();
+		this.versionNumber = (short)this.reader.readVersionNumber();
 		// System.out.println(versionNumber);
 	}
 }

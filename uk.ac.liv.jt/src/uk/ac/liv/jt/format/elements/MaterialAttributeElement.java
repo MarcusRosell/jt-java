@@ -53,12 +53,9 @@ public class MaterialAttributeElement extends BaseAttributeElement
 	{
 		super.read();
 
-		int versionNumber = -1;
+		// newer versions (e.g. version 2 of JT 9) add fields after the shininess, these are skipped
 		if ( this.reader.MAJOR_VERSION >= 9 ) {
-			versionNumber = this.reader.readI16();
-			if ( versionNumber != 1 ) {
-				throw new IllegalArgumentException( "Found invalid version number: " + versionNumber ); //$NON-NLS-1$
-			}
+			this.reader.readVersionNumber();
 		}
 
 		this.dataFlags = this.reader.readU16();

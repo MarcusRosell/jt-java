@@ -3,6 +3,9 @@
  * 
  *     Copyright © 2010 Jerome Fuselier and Fabio Corubolo - all rights reserved
  *     jerome.fuselier@gmail.com ; corubolo@gmail.com
+ *
+ *     Copyright © 2026 Marcus Rosell - all rights reserved
+ *     marcus.rosell@solme.se
  * 
  *     This program is free software: you can redistribute it and/or modify
  *     it under the terms of the GNU Lesser General Public License as published
